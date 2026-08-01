@@ -81,3 +81,18 @@ fun SyntrixorAdminTheme(content: @Composable () -> Unit) {
         )
     }
 }
+
+/**
+ * Preview-only theme wrapper that bypasses the [ThemeManager] singleton so
+ * @Preview functions can force a genuine light/dark pair regardless of the
+ * app's persisted theme preference.
+ */
+@Composable
+fun SyntrixorAdminPreviewTheme(darkTheme: Boolean, content: @Composable () -> Unit) {
+    val colorScheme = if (darkTheme) SyntrixorDarkColorScheme else SyntrixorLightColorScheme
+    MaterialTheme(
+        colorScheme = colorScheme,
+        typography = Typography,
+        content = content
+    )
+}

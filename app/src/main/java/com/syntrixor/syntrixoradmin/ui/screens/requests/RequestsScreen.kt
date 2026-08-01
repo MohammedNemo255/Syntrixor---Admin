@@ -26,13 +26,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.syntrixor.syntrixoradmin.R
+import com.syntrixor.syntrixoradmin.data.model.Category
+import com.syntrixor.syntrixoradmin.data.model.MaintenanceRequest
+import com.syntrixor.syntrixoradmin.data.model.Priority
 import com.syntrixor.syntrixoradmin.data.model.RequestStatus
 import com.syntrixor.syntrixoradmin.ui.components.RequestCard
 import com.syntrixor.syntrixoradmin.ui.components.SearchField
 import com.syntrixor.syntrixoradmin.ui.theme.Dimens
+import com.syntrixor.syntrixoradmin.ui.theme.SyntrixorAdminPreviewTheme
 import com.syntrixor.syntrixoradmin.ui.theme.Violet600
 
 data class FilterOption(val labelRes: Int, val status: RequestStatus?)
@@ -53,6 +58,27 @@ fun RequestsScreen(
 ) {
     val state by vm.state.collectAsState()
 
+    RequestsContent(
+        state = state,
+        onSearchChange = { vm.setSearch(it) },
+        onFilterChange = { vm.setFilter(it) },
+        onRetry = { vm.load() },
+        onRequestClick = onRequestClick,
+        modifier = modifier
+    )
+}
+
+// ── Stateless UI (previewable) ───────────────────────────────────────────────
+
+@Composable
+private fun RequestsContent(
+    state: RequestsState,
+    onSearchChange: (String) -> Unit,
+    onFilterChange: (RequestStatus?) -> Unit,
+    onRetry: () -> Unit,
+    onRequestClick: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -61,7 +87,7 @@ fun RequestsScreen(
         // Search bar
         SearchField(
             query = state.searchQuery,
-            onQueryChange = { vm.setSearch(it) },
+            onQueryChange = onSearchChange,
             hint = stringResource(R.string.search_requests),
             modifier = Modifier.padding(horizontal = Dimens.ScreenPaddingHorizontal, vertical = Dimens.SpaceSm)
         )
@@ -75,7 +101,7 @@ fun RequestsScreen(
                 val selected = state.activeFilter == option.status
                 FilterChip(
                     selected = selected,
-                    onClick  = { vm.setFilter(option.status) },
+                    onClick  = { onFilterChange(option.status) },
                     label    = { Text(stringResource(option.labelRes)) },
                     colors   = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = Violet600,
@@ -94,7 +120,7 @@ fun RequestsScreen(
                     Text(state.error ?: "", color = MaterialTheme.colorScheme.error)
                     Spacer(Modifier.height(12.dp))
                     Button(
-                        onClick = { vm.load() },
+                        onClick = onRetry,
                         colors  = ButtonDefaults.buttonColors(containerColor = Violet600)
                     ) { Text(stringResource(R.string.retry), color = Color.White) }
                 }
@@ -111,5 +137,62 @@ fun RequestsScreen(
                 }
             }
         }
+    }
+}
+
+// ── Previews ─────────────────────────────────────────────────────────────────
+
+private val previewRequests = listOf(
+    MaintenanceRequest(
+        "req001", "r1", "Nadia Mostafa", "A-101",
+        Category.PLUMBING, Priority.HIGH,
+        "Leaking bathroom pipe",
+        "Pipe under the sink has been leaking for two days.",
+        RequestStatus.PENDING, null, null,
+        "2026-06-28 09:15", "2026-06-28 09:15", null
+    ),
+    MaintenanceRequest(
+        "req002", "r2", "Sara Ahmed", "A-203",
+        Category.ELECTRICAL, Priority.URGENT,
+        "Power outlet not working",
+        "The outlet in the kitchen stopped working suddenly.",
+        RequestStatus.IN_PROGRESS, "t2", "Mohamed Samir",
+        "2026-06-27 14:30", "2026-06-28 10:00", "2026-06-29 10:00"
+    ),
+    MaintenanceRequest(
+        "req004", "r4", "Layla Ibrahim", "B-312",
+        Category.CARPENTRY, Priority.LOW,
+        "Cabinet door hinge broken",
+        "Kitchen cabinet door fell off. Hinge needs replacement.",
+        RequestStatus.COMPLETED, "t4", "Omar Farouk",
+        "2026-06-20 08:00", "2026-06-25 16:00", "2026-06-21 09:00"
+    )
+)
+
+@Preview(showBackground = true, name = "Light")
+@Composable
+private fun PreviewRequestsScreenLight() {
+    SyntrixorAdminPreviewTheme(darkTheme = false) {
+        RequestsContent(
+            state = RequestsState(requests = previewRequests, isLoading = false),
+            onSearchChange = {},
+            onFilterChange = {},
+            onRetry = {},
+            onRequestClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Dark")
+@Composable
+private fun PreviewRequestsScreenDark() {
+    SyntrixorAdminPreviewTheme(darkTheme = true) {
+        RequestsContent(
+            state = RequestsState(requests = previewRequests, isLoading = false),
+            onSearchChange = {},
+            onFilterChange = {},
+            onRetry = {},
+            onRequestClick = {}
+        )
     }
 }

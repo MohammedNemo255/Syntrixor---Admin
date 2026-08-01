@@ -45,12 +45,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.syntrixor.syntrixoradmin.R
 import com.syntrixor.syntrixoradmin.data.AppModule
+import com.syntrixor.syntrixoradmin.data.model.Admin
 import com.syntrixor.syntrixoradmin.ui.components.SyntrixorTopBar
 import com.syntrixor.syntrixoradmin.ui.theme.Dimens
+import com.syntrixor.syntrixoradmin.ui.theme.SyntrixorAdminPreviewTheme
 import com.syntrixor.syntrixoradmin.ui.theme.Violet600
 import com.syntrixor.syntrixoradmin.utils.FeatureFlags
 import com.syntrixor.syntrixoradmin.utils.LocaleHelper
@@ -66,8 +69,42 @@ fun ProfileScreen(
 ) {
     val context = LocalContext.current
     val isDark by ThemeManager.isDarkMode
-    var showLogoutDialog by remember { mutableStateOf(false) }
     val isSuperAdmin = AppModule.currentAdmin?.assignedCategories?.isEmpty() == true
+
+    ProfileContent(
+        modifier = modifier,
+        admin = AppModule.currentAdmin,
+        isDark = isDark,
+        isArabic = LocaleHelper.getLanguage(context) == "ar",
+        isSuperAdmin = isSuperAdmin,
+        onBack = onBack,
+        onNavigateToAdmins = onNavigateToAdmins,
+        onLogout = onLogout,
+        onToggleDark = { ThemeManager.toggle(context) },
+        onToggleArabic = { on ->
+            LocaleHelper.setLanguage(context, if (on) "ar" else "en")
+            (context as? android.app.Activity)?.recreate()
+        }
+    )
+}
+
+// ── Stateless UI (previewable) ───────────────────────────────────────────────
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ProfileContent(
+    modifier: Modifier = Modifier,
+    admin: Admin?,
+    isDark: Boolean,
+    isArabic: Boolean,
+    isSuperAdmin: Boolean,
+    onBack: (() -> Unit)?,
+    onNavigateToAdmins: (() -> Unit)?,
+    onLogout: () -> Unit,
+    onToggleDark: () -> Unit,
+    onToggleArabic: (Boolean) -> Unit
+) {
+    var showLogoutDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -89,7 +126,6 @@ fun ProfileScreen(
         ) {
             Spacer(Modifier.height(Dimens.SpaceXl))
 
-            val admin = AppModule.currentAdmin
             Box(
                 modifier = Modifier
                     .size(80.dp)
@@ -128,16 +164,13 @@ fun ProfileScreen(
                 SettingsToggleRow(
                     label = stringResource(R.string.dark_mode),
                     checked = isDark,
-                    onToggle = { ThemeManager.toggle(context) }
+                    onToggle = { onToggleDark() }
                 )
                 SettingsDivider()
                 SettingsToggleRow(
                     label = stringResource(R.string.arabic_language),
-                    checked = LocaleHelper.getLanguage(context) == "ar",
-                    onToggle = { on ->
-                        LocaleHelper.setLanguage(context, if (on) "ar" else "en")
-                        (context as? android.app.Activity)?.recreate()
-                    }
+                    checked = isArabic,
+                    onToggle = onToggleArabic
                 )
             }
 
@@ -270,4 +303,61 @@ private fun SettingsDivider() {
         modifier = Modifier.padding(vertical = Dimens.SpaceSm),
         color = MaterialTheme.colorScheme.outline
     )
+}
+
+// ── Previews ─────────────────────────────────────────────────────────────────
+
+@Preview(showBackground = true, name = "Light")
+@Composable
+private fun PreviewProfileLight() {
+    SyntrixorAdminPreviewTheme(darkTheme = false) {
+        ProfileContent(
+            admin = Admin(
+                id = "admin1",
+                name = "Nadia Mostafa",
+                email = "admin@syntrixor.com",
+                phone = "+20 100 000 0000",
+                role = "System Administrator",
+                compoundName = "Syntrixor Heights",
+                assignedCategories = emptyList()
+            ),
+            isDark = false,
+            isArabic = false,
+            isSuperAdmin = true,
+            onBack = {},
+            onNavigateToAdmins = {},
+            onLogout = {},
+            onToggleDark = {},
+            onToggleArabic = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Dark")
+@Composable
+private fun PreviewProfileDark() {
+    SyntrixorAdminPreviewTheme(darkTheme = true) {
+        ProfileContent(
+            admin = Admin(
+                id = "admin2",
+                name = "Plumbing Admin",
+                email = "plumbing@syntrixor.com",
+                phone = "+20 100 000 0001",
+                role = "Category Administrator",
+                compoundName = "Syntrixor Heights",
+                assignedCategories = listOf(
+                    com.syntrixor.syntrixoradmin.data.model.Category.PLUMBING,
+                    com.syntrixor.syntrixoradmin.data.model.Category.CARPENTRY
+                )
+            ),
+            isDark = true,
+            isArabic = false,
+            isSuperAdmin = false,
+            onBack = {},
+            onNavigateToAdmins = null,
+            onLogout = {},
+            onToggleDark = {},
+            onToggleArabic = {}
+        )
+    }
 }

@@ -43,17 +43,20 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.syntrixor.syntrixoradmin.R
 import com.syntrixor.syntrixoradmin.data.model.Admin
+import com.syntrixor.syntrixoradmin.data.model.Category
 import com.syntrixor.syntrixoradmin.ui.components.EmptyDetailPane
 import com.syntrixor.syntrixoradmin.ui.components.SearchField
 import com.syntrixor.syntrixoradmin.ui.components.SyntrixorTopBar
 import com.syntrixor.syntrixoradmin.ui.theme.Dimens
 import com.syntrixor.syntrixoradmin.ui.theme.Info
 import com.syntrixor.syntrixoradmin.ui.theme.Success
+import com.syntrixor.syntrixoradmin.ui.theme.SyntrixorAdminPreviewTheme
 import com.syntrixor.syntrixoradmin.ui.theme.Violet600
 import com.syntrixor.syntrixoradmin.utils.LocalIsTablet
 
@@ -97,7 +100,8 @@ fun AdminsScreen(
                 AdminsListContent(
                     state = state,
                     filtered = filtered,
-                    vm = vm,
+                    onSearchChange = { vm.onEvent(AdminsEvent.SearchChanged(it)) },
+                    onRetry = { vm.onEvent(AdminsEvent.Load) },
                     onAdminClick = { selectedAdminId = it },
                     modifier = Modifier.weight(0.4f).fillMaxHeight()
                 )
@@ -123,7 +127,8 @@ fun AdminsScreen(
             AdminsListContent(
                 state = state,
                 filtered = filtered,
-                vm = vm,
+                onSearchChange = { vm.onEvent(AdminsEvent.SearchChanged(it)) },
+                onRetry = { vm.onEvent(AdminsEvent.Load) },
                 onAdminClick = onAdminClick,
                 modifier = Modifier
                     .fillMaxSize()
@@ -137,14 +142,15 @@ fun AdminsScreen(
 private fun AdminsListContent(
     state: AdminsState,
     filtered: List<Admin>,
-    vm: AdminsViewModel,
+    onSearchChange: (String) -> Unit,
+    onRetry: () -> Unit,
     onAdminClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
         SearchField(
             query = state.searchQuery,
-            onQueryChange = { vm.onEvent(AdminsEvent.SearchChanged(it)) },
+            onQueryChange = onSearchChange,
             hint = stringResource(R.string.search_admins),
             modifier = Modifier.padding(horizontal = Dimens.ScreenPaddingHorizontal, vertical = Dimens.SpaceSm)
         )
@@ -159,7 +165,7 @@ private fun AdminsListContent(
                     Text(state.error ?: "", color = MaterialTheme.colorScheme.error)
                     Spacer(Modifier.height(12.dp))
                     Button(
-                        onClick = { vm.onEvent(AdminsEvent.Load) },
+                        onClick = onRetry,
                         colors = ButtonDefaults.buttonColors(containerColor = Violet600)
                     ) { Text(stringResource(R.string.retry), color = Color.White) }
                 }
@@ -267,4 +273,51 @@ private fun AdminChip(label: String, color: Color) {
             .background(color.copy(alpha = 0.12f))
             .padding(horizontal = 8.dp, vertical = 2.dp)
     )
+}
+
+// ── Previews ─────────────────────────────────────────────────────────────────
+
+private val previewAdmins = listOf(
+    Admin(
+        "admin1", "Syntrixor Admin", "admin@syntrixor.com", "+20 100 000 0000",
+        "System Administrator", "Syntrixor Heights", emptyList()
+    ),
+    Admin(
+        "admin2", "Plumbing Admin", "plumbing@syntrixor.com", "+20 100 000 0001",
+        "Category Administrator", "Syntrixor Heights",
+        listOf(Category.PLUMBING, Category.CARPENTRY, Category.PAINTING)
+    ),
+    Admin(
+        "admin3", "Electrical Admin", "electrical@syntrixor.com", "+20 100 000 0002",
+        "Category Administrator", "Syntrixor Heights",
+        listOf(Category.ELECTRICAL, Category.SECURITY), isActive = false
+    )
+)
+
+@Preview(showBackground = true, name = "Light")
+@Composable
+private fun PreviewAdminsScreenLight() {
+    SyntrixorAdminPreviewTheme(darkTheme = false) {
+        AdminsListContent(
+            state = AdminsState(admins = previewAdmins, isLoading = false),
+            filtered = previewAdmins,
+            onSearchChange = {},
+            onRetry = {},
+            onAdminClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Dark")
+@Composable
+private fun PreviewAdminsScreenDark() {
+    SyntrixorAdminPreviewTheme(darkTheme = true) {
+        AdminsListContent(
+            state = AdminsState(admins = previewAdmins, isLoading = false),
+            filtered = previewAdmins,
+            onSearchChange = {},
+            onRetry = {},
+            onAdminClick = {}
+        )
+    }
 }

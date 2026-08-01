@@ -1,6 +1,7 @@
 package com.syntrixor.syntrixoradmin
 
 import android.content.Context
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,6 +13,7 @@ import com.syntrixor.syntrixoradmin.ui.theme.SyntrixorAdminTheme
 import com.syntrixor.syntrixoradmin.utils.LocaleHelper
 import com.syntrixor.syntrixoradmin.utils.LocalIsTablet
 import com.syntrixor.syntrixoradmin.utils.ThemeManager
+import com.syntrixor.syntrixoradmin.utils.isTabletDevice
 import com.syntrixor.syntrixoradmin.utils.rememberIsTablet
 
 class MainActivity : ComponentActivity() {
@@ -23,6 +25,12 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ThemeManager.init(this)
+        // Tablets are locked to landscape (nav rail + two-pane layouts); phones stay portrait-only.
+        requestedOrientation = if (isTabletDevice(this)) {
+            ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        } else {
+            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        }
         enableEdgeToEdge()
         setContent {
             SyntrixorAdminTheme {

@@ -60,12 +60,14 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.syntrixor.syntrixoradmin.R
 import com.syntrixor.syntrixoradmin.ui.theme.Dimens
 import com.syntrixor.syntrixoradmin.ui.theme.Navy
+import com.syntrixor.syntrixoradmin.ui.theme.SyntrixorAdminPreviewTheme
 import com.syntrixor.syntrixoradmin.ui.theme.Violet400
 import com.syntrixor.syntrixoradmin.ui.theme.Violet600
 import com.syntrixor.syntrixoradmin.ui.theme.White
@@ -77,17 +79,29 @@ fun LoginScreen(
     vm: LoginViewModel = viewModel()
 ) {
     val state by vm.state.collectAsState()
+
+    LaunchedEffect(state.isSuccess) { if (state.isSuccess) onLoginSuccess() }
+
+    LoginContent(state = state, onEvent = vm::onEvent)
+}
+
+// ── Stateless UI (previewable) ───────────────────────────────────────────────
+
+@Composable
+private fun LoginContent(
+    state: LoginState,
+    onEvent: (LoginEvent) -> Unit
+) {
     val snackbarHostState = remember { SnackbarHostState() }
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
     var passwordVisible by remember { mutableStateOf(false) }
     val currentLang = LocaleHelper.getLanguage(context)
 
-    LaunchedEffect(state.isSuccess) { if (state.isSuccess) onLoginSuccess() }
     LaunchedEffect(state.error) {
         state.error?.let {
             snackbarHostState.showSnackbar(it)
-            vm.onEvent(LoginEvent.ClearError)
+            onEvent(LoginEvent.ClearError)
         }
     }
 
@@ -137,7 +151,7 @@ fun LoginScreen(
             // Email
             OutlinedTextField(
                 value = state.email,
-                onValueChange = { vm.onEvent(LoginEvent.EmailChanged(it)) },
+                onValueChange = { onEvent(LoginEvent.EmailChanged(it)) },
                 label = { Text(stringResource(R.string.email_hint)) },
                 leadingIcon = { Icon(Icons.Filled.Email, contentDescription = null) },
                 isError = state.emailError != null,
@@ -157,7 +171,7 @@ fun LoginScreen(
             // Password
             OutlinedTextField(
                 value = state.password,
-                onValueChange = { vm.onEvent(LoginEvent.PasswordChanged(it)) },
+                onValueChange = { onEvent(LoginEvent.PasswordChanged(it)) },
                 label = { Text(stringResource(R.string.password_hint)) },
                 leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = null) },
                 trailingIcon = {
@@ -180,7 +194,7 @@ fun LoginScreen(
                 ),
                 keyboardActions = KeyboardActions(onDone = {
                     focusManager.clearFocus()
-                    vm.onEvent(LoginEvent.Submit)
+                    onEvent(LoginEvent.Submit)
                 }),
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
@@ -193,7 +207,7 @@ fun LoginScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { vm.onEvent(LoginEvent.RememberMeChanged(!state.rememberMe)) },
+                    .clickable { onEvent(LoginEvent.RememberMeChanged(!state.rememberMe)) },
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start
             ) {
@@ -218,7 +232,7 @@ fun LoginScreen(
             Button(
                 onClick = {
                     focusManager.clearFocus()
-                    vm.onEvent(LoginEvent.Submit)
+                    onEvent(LoginEvent.Submit)
                 },
                 enabled = !state.isLoading,
                 modifier = Modifier
@@ -313,3 +327,36 @@ private fun fieldColors() = OutlinedTextFieldDefaults.colors(
     errorBorderColor = Color(0xFFDC2626),
     cursorColor = Violet400
 )
+
+// ── Previews ─────────────────────────────────────────────────────────────────
+
+@Preview(showBackground = true, name = "Light")
+@Composable
+private fun PreviewLoginLight() {
+    SyntrixorAdminPreviewTheme(darkTheme = false) {
+        LoginContent(
+            state = LoginState(
+                email = "admin@syntrixor.com",
+                password = "admin123",
+                rememberMe = true
+            ),
+            onEvent = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Dark")
+@Composable
+private fun PreviewLoginDark() {
+    SyntrixorAdminPreviewTheme(darkTheme = true) {
+        LoginContent(
+            state = LoginState(
+                email = "plumbing@syntrixor.com",
+                password = "",
+                emailError = null,
+                passwordError = "Password must be at least 6 characters"
+            ),
+            onEvent = {}
+        )
+    }
+}

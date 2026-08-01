@@ -10,6 +10,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import com.syntrixor.syntrixoradmin.ui.theme.SyntrixorAdminPreviewTheme
 
 @Composable
 fun SyntrixorNavRail(
@@ -36,5 +38,23 @@ fun SyntrixorNavRail(
                 )
             )
         }
+    }
+}
+
+// ── Previews ─────────────────────────────────────────────────────────────────
+
+@Preview(showBackground = true, name = "Light")
+@Composable
+private fun PreviewSyntrixorNavRailLight() {
+    SyntrixorAdminPreviewTheme(darkTheme = false) {
+        SyntrixorNavRail(selectedRoute = "dashboard", onTabSelected = {})
+    }
+}
+
+@Preview(showBackground = true, name = "Dark")
+@Composable
+private fun PreviewSyntrixorNavRailDark() {
+    SyntrixorAdminPreviewTheme(darkTheme = true) {
+        SyntrixorNavRail(selectedRoute = "technicians", onTabSelected = {})
     }
 }

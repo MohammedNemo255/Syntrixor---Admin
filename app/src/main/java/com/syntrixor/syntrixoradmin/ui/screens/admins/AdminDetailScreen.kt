@@ -1,4 +1,4 @@
-package com.syntrixor.syntrixoradmin.ui.screens.admins
+﻿package com.syntrixor.syntrixoradmin.ui.screens.admins
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -47,6 +47,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDirection
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -55,6 +56,7 @@ import com.syntrixor.syntrixoradmin.data.model.Category
 import com.syntrixor.syntrixoradmin.ui.components.SyntrixorTopBar
 import com.syntrixor.syntrixoradmin.ui.theme.Dimens
 import com.syntrixor.syntrixoradmin.ui.theme.Success
+import com.syntrixor.syntrixoradmin.ui.theme.SyntrixorAdminPreviewTheme
 import com.syntrixor.syntrixoradmin.ui.theme.Violet600
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -67,6 +69,26 @@ fun AdminDetailScreen(
     vm: AdminDetailViewModel = viewModel(factory = AdminDetailViewModel.factory(adminId))
 ) {
     val state by vm.state.collectAsState()
+    AdminDetailContent(
+        state = state,
+        onEvent = vm::onEvent,
+        onSaveSuccess = onSaveSuccess,
+        onBack = onBack,
+        modifier = modifier
+    )
+}
+
+// ── Stateless UI (previewable) ───────────────────────────────────────────────
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun AdminDetailContent(
+    state: AdminDetailState,
+    onEvent: (AdminDetailEvent) -> Unit,
+    onSaveSuccess: () -> Unit,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     val snackbar = remember { SnackbarHostState() }
 
     val savedMsg =
@@ -75,7 +97,7 @@ fun AdminDetailScreen(
     LaunchedEffect(state.saveSuccess) {
         if (state.saveSuccess) {
             snackbar.showSnackbar(savedMsg)
-            vm.onEvent(AdminDetailEvent.ClearSaveSuccess)
+            onEvent(AdminDetailEvent.ClearSaveSuccess)
             onSaveSuccess()
         }
     }
@@ -83,7 +105,7 @@ fun AdminDetailScreen(
     LaunchedEffect(state.error) {
         if (state.error != null) {
             snackbar.showSnackbar(state.error ?: "")
-            vm.onEvent(AdminDetailEvent.ClearError)
+            onEvent(AdminDetailEvent.ClearError)
         }
     }
 
@@ -103,7 +125,7 @@ fun AdminDetailScreen(
                             color = Violet600
                         )
                     } else {
-                        TextButton(onClick = { vm.onEvent(AdminDetailEvent.Save) }) {
+                        TextButton(onClick = { onEvent(AdminDetailEvent.Save) }) {
                             Text(
                                 text = stringResource(if (state.isCreateMode) R.string.create_admin_btn else R.string.save_changes),
                                 color = Violet600,
@@ -132,7 +154,7 @@ fun AdminDetailScreen(
             SectionCard {
                 AdminField(
                     value = state.name,
-                    onValue = { vm.onEvent(AdminDetailEvent.NameChanged(it)) },
+                    onValue = { onEvent(AdminDetailEvent.NameChanged(it)) },
                     label = stringResource(R.string.admin_name_hint),
                     error = state.nameError,
                     keyboardType = KeyboardType.Text,
@@ -141,7 +163,7 @@ fun AdminDetailScreen(
                 Spacer(Modifier.height(Dimens.SpaceMd))
                 AdminField(
                     value = state.email,
-                    onValue = { vm.onEvent(AdminDetailEvent.EmailChanged(it)) },
+                    onValue = { onEvent(AdminDetailEvent.EmailChanged(it)) },
                     label = stringResource(R.string.email_hint),
                     error = state.emailError,
                     keyboardType = KeyboardType.Email,
@@ -151,7 +173,7 @@ fun AdminDetailScreen(
                 Spacer(Modifier.height(Dimens.SpaceMd))
                 AdminField(
                     value = state.phone,
-                    onValue = { vm.onEvent(AdminDetailEvent.PhoneChanged(it)) },
+                    onValue = { onEvent(AdminDetailEvent.PhoneChanged(it)) },
                     label = stringResource(R.string.admin_phone_hint),
                     keyboardType = KeyboardType.Phone,
                     ltr = true
@@ -169,14 +191,14 @@ fun AdminDetailScreen(
                         label = stringResource(R.string.admin_active),
                         selected = state.isActive,
                         activeColor = Success,
-                        onClick = { if (!state.isActive) vm.onEvent(AdminDetailEvent.ToggleActive) },
+                        onClick = { if (!state.isActive) onEvent(AdminDetailEvent.ToggleActive) },
                         modifier = Modifier.weight(1f)
                     )
                     StatusChip(
                         label = stringResource(R.string.admin_inactive),
                         selected = !state.isActive,
                         activeColor = MaterialTheme.colorScheme.error,
-                        onClick = { if (state.isActive) vm.onEvent(AdminDetailEvent.ToggleActive) },
+                        onClick = { if (state.isActive) onEvent(AdminDetailEvent.ToggleActive) },
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -201,7 +223,7 @@ fun AdminDetailScreen(
                             label = stringResource(cat.labelRes),
                             selected = selected,
                             color = cat.color,
-                            onClick = { vm.onEvent(AdminDetailEvent.ToggleCategory(cat)) }
+                            onClick = { onEvent(AdminDetailEvent.ToggleCategory(cat)) }
                         )
                     }
                 }
@@ -331,4 +353,72 @@ private fun CategoryToggleChip(
             .clickable(onClick = onClick)
             .padding(horizontal = 14.dp, vertical = 6.dp)
     )
+}
+
+// ── Previews ─────────────────────────────────────────────────────────────────
+
+@Preview(showBackground = true, name = "Light — Edit mode")
+@Composable
+private fun PreviewAdminDetailEditLight() {
+    SyntrixorAdminPreviewTheme(darkTheme = false) {
+        AdminDetailContent(
+            state = AdminDetailState(
+                isCreateMode = false,
+                name = "Plumbing Admin",
+                email = "plumbing@syntrixor.com",
+                phone = "+20 100 000 0001",
+                selectedCategories = listOf(Category.PLUMBING, Category.CARPENTRY, Category.PAINTING),
+                isActive = true
+            ),
+            onEvent = {},
+            onSaveSuccess = {},
+            onBack = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Dark — Edit mode")
+@Composable
+private fun PreviewAdminDetailEditDark() {
+    SyntrixorAdminPreviewTheme(darkTheme = true) {
+        AdminDetailContent(
+            state = AdminDetailState(
+                isCreateMode = false,
+                name = "Plumbing Admin",
+                email = "plumbing@syntrixor.com",
+                phone = "+20 100 000 0001",
+                selectedCategories = listOf(Category.PLUMBING, Category.CARPENTRY, Category.PAINTING),
+                isActive = true
+            ),
+            onEvent = {},
+            onSaveSuccess = {},
+            onBack = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Light — Create mode")
+@Composable
+private fun PreviewAdminDetailCreateLight() {
+    SyntrixorAdminPreviewTheme(darkTheme = false) {
+        AdminDetailContent(
+            state = AdminDetailState(isCreateMode = true),
+            onEvent = {},
+            onSaveSuccess = {},
+            onBack = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Dark — Create mode")
+@Composable
+private fun PreviewAdminDetailCreateDark() {
+    SyntrixorAdminPreviewTheme(darkTheme = true) {
+        AdminDetailContent(
+            state = AdminDetailState(isCreateMode = true),
+            onEvent = {},
+            onSaveSuccess = {},
+            onBack = {}
+        )
+    }
 }

@@ -48,14 +48,18 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.syntrixor.syntrixoradmin.R
 import com.syntrixor.syntrixoradmin.data.model.Announcement
+import com.syntrixor.syntrixoradmin.data.model.AnnouncementCategory
+import com.syntrixor.syntrixoradmin.data.model.AnnouncementPriority
 import com.syntrixor.syntrixoradmin.ui.theme.Dimens
 import com.syntrixor.syntrixoradmin.ui.theme.Success
+import com.syntrixor.syntrixoradmin.ui.theme.SyntrixorAdminPreviewTheme
 import com.syntrixor.syntrixoradmin.ui.theme.Violet600
 
 @Composable
@@ -67,9 +71,6 @@ fun AnnouncementsScreen(
     val state by vm.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val postedMsg = stringResource(R.string.announcement_posted)
-
-    // Image viewer state
-    var viewerImageUri by remember { mutableStateOf<String?>(null) }
 
     // Navigate to Create/Edit when triggered by ViewModel
     LaunchedEffect(state.navigateToCreate) {
@@ -86,6 +87,30 @@ fun AnnouncementsScreen(
         }
     }
 
+    AnnouncementsContent(
+        state = state,
+        snackbarHostState = snackbarHostState,
+        onRetry = { vm.load() },
+        onEdit = { id -> vm.onEvent(AnnouncementsEvent.StartEdit(id)) },
+        onDelete = { id -> vm.onEvent(AnnouncementsEvent.DeleteAnnouncement(id)) },
+        onToggleActive = { id -> vm.onEvent(AnnouncementsEvent.ToggleActive(id)) },
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun AnnouncementsContent(
+    state: AnnouncementsState,
+    snackbarHostState: SnackbarHostState,
+    onRetry: () -> Unit,
+    onEdit: (String) -> Unit,
+    onDelete: (String) -> Unit,
+    onToggleActive: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    // Image viewer state
+    var viewerImageUri by remember { mutableStateOf<String?>(null) }
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -100,7 +125,7 @@ fun AnnouncementsScreen(
                     Text(state.error ?: "", color = MaterialTheme.colorScheme.error)
                     Spacer(Modifier.height(12.dp))
                     Button(
-                        onClick = { vm.load() },
+                        onClick = onRetry,
                         colors = ButtonDefaults.buttonColors(containerColor = Violet600)
                     ) { Text(stringResource(R.string.retry)) }
                 }
@@ -117,9 +142,9 @@ fun AnnouncementsScreen(
                     AnnouncementCard(
                         announcement = item,
                         onImageClick  = { uri -> viewerImageUri = uri },
-                        onEdit        = { vm.onEvent(AnnouncementsEvent.StartEdit(item.id)) },
-                        onDelete      = { vm.onEvent(AnnouncementsEvent.DeleteAnnouncement(item.id)) },
-                        onToggleActive = { vm.onEvent(AnnouncementsEvent.ToggleActive(item.id)) }
+                        onEdit        = { onEdit(item.id) },
+                        onDelete      = { onDelete(item.id) },
+                        onToggleActive = { onToggleActive(item.id) }
                     )
                 }
             }
@@ -287,5 +312,67 @@ private fun AnnouncementCard(
                 )
             }
         }
+    }
+}
+
+// ── Previews ─────────────────────────────────────────────────────────────────
+
+private val previewAnnouncements = listOf(
+    Announcement(
+        "a1",
+        "Scheduled Water Maintenance",
+        "Water will be shut off on July 5 from 8 AM to 12 PM for annual maintenance.",
+        "2026-07-01",
+        true,
+        AnnouncementCategory.MAINTENANCE,
+        AnnouncementPriority.HIGH
+    ),
+    Announcement(
+        "a2",
+        "Elevator Service Reminder",
+        "Please report any elevator issues immediately to the management office.",
+        "2026-06-28",
+        true,
+        AnnouncementCategory.GENERAL,
+        AnnouncementPriority.MEDIUM
+    ),
+    Announcement(
+        "a3",
+        "Compound Cleaning Day",
+        "A general cleaning crew will work throughout the compound on July 10.",
+        "2026-06-25",
+        false,
+        AnnouncementCategory.EVENT,
+        AnnouncementPriority.LOW
+    ),
+)
+
+@Preview(showBackground = true, name = "Light")
+@Composable
+private fun PreviewAnnouncementsScreenLight() {
+    SyntrixorAdminPreviewTheme(darkTheme = false) {
+        AnnouncementsContent(
+            state = AnnouncementsState(announcements = previewAnnouncements, isLoading = false),
+            snackbarHostState = remember { SnackbarHostState() },
+            onRetry = {},
+            onEdit = {},
+            onDelete = {},
+            onToggleActive = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Dark")
+@Composable
+private fun PreviewAnnouncementsScreenDark() {
+    SyntrixorAdminPreviewTheme(darkTheme = true) {
+        AnnouncementsContent(
+            state = AnnouncementsState(announcements = previewAnnouncements, isLoading = false),
+            snackbarHostState = remember { SnackbarHostState() },
+            onRetry = {},
+            onEdit = {},
+            onDelete = {},
+            onToggleActive = {}
+        )
     }
 }

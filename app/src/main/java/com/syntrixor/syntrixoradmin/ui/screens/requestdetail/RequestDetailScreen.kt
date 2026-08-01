@@ -1,4 +1,4 @@
-package com.syntrixor.syntrixoradmin.ui.screens.requestdetail
+﻿package com.syntrixor.syntrixoradmin.ui.screens.requestdetail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -39,17 +39,23 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.syntrixor.syntrixoradmin.R
+import com.syntrixor.syntrixoradmin.data.model.Category
+import com.syntrixor.syntrixoradmin.data.model.MaintenanceRequest
+import com.syntrixor.syntrixoradmin.data.model.Priority
 import com.syntrixor.syntrixoradmin.data.model.RequestStatus
+import com.syntrixor.syntrixoradmin.data.model.Technician
 import com.syntrixor.syntrixoradmin.ui.components.StatusBadge
 import com.syntrixor.syntrixoradmin.ui.components.SyntrixorTopBar
 import com.syntrixor.syntrixoradmin.ui.theme.Dimens
 import com.syntrixor.syntrixoradmin.ui.theme.Success
+import com.syntrixor.syntrixoradmin.ui.theme.SyntrixorAdminPreviewTheme
 import com.syntrixor.syntrixoradmin.ui.theme.Violet600
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -66,18 +72,36 @@ fun RequestDetailScreen(
     })
 ) {
     val state by vm.state.collectAsState()
+    RequestDetailContent(
+        state = state,
+        onEvent = vm::onEvent,
+        onBack = onBack,
+        modifier = modifier
+    )
+}
+
+// ── Stateless UI (previewable) ───────────────────────────────────────────────
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun RequestDetailContent(
+    state: RequestDetailState,
+    onEvent: (RequestDetailEvent) -> Unit,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(state.successMessage) {
         state.successMessage?.let {
             snackbarHostState.showSnackbar(it)
-            vm.onEvent(RequestDetailEvent.ClearMessage)
+            onEvent(RequestDetailEvent.ClearMessage)
         }
     }
     LaunchedEffect(state.error) {
         state.error?.let {
             snackbarHostState.showSnackbar(it)
-            vm.onEvent(RequestDetailEvent.ClearMessage)
+            onEvent(RequestDetailEvent.ClearMessage)
         }
     }
 
@@ -155,7 +179,7 @@ fun RequestDetailScreen(
                     item {
                         Row(horizontalArrangement = Arrangement.spacedBy(Dimens.SpaceSm)) {
                             OutlinedButton(
-                                onClick = { vm.onEvent(RequestDetailEvent.ShowAssignDialog) },
+                                onClick = { onEvent(RequestDetailEvent.ShowAssignDialog) },
                                 enabled = !state.isUpdating,
                                 modifier = Modifier.weight(1f).height(Dimens.ButtonHeight),
                                 shape = RoundedCornerShape(Dimens.RadiusMd),
@@ -168,7 +192,7 @@ fun RequestDetailScreen(
                                 }
                             }
                             Button(
-                                onClick = { vm.onEvent(RequestDetailEvent.ShowStatusDialog) },
+                                onClick = { onEvent(RequestDetailEvent.ShowStatusDialog) },
                                 enabled = !state.isUpdating,
                                 modifier = Modifier.weight(1f).height(Dimens.ButtonHeight),
                                 shape = RoundedCornerShape(Dimens.RadiusMd),
@@ -185,34 +209,34 @@ fun RequestDetailScreen(
         // Assign Technician dialog
         if (state.showAssignDialog) {
             AlertDialog(
-                onDismissRequest = { vm.onEvent(RequestDetailEvent.HideAssignDialog) },
+                onDismissRequest = { onEvent(RequestDetailEvent.HideAssignDialog) },
                 title = { Text(stringResource(R.string.assign_technician)) },
                 text = {
                     Column(verticalArrangement = Arrangement.spacedBy(Dimens.SpaceSm)) {
                         state.technicians.filter { it.isActive }.forEach { tech ->
-                            TextButton(onClick = { vm.onEvent(RequestDetailEvent.AssignTechnician(tech.id)) }, modifier = Modifier.fillMaxWidth()) {
+                            TextButton(onClick = { onEvent(RequestDetailEvent.AssignTechnician(tech.id)) }, modifier = Modifier.fillMaxWidth()) {
                                 Column(Modifier.fillMaxWidth()) {
                                     Text(tech.name, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface)
-                                    Text("${tech.specialization}  •  ${tech.openRequestsCount} ${stringResource(R.string.open_word)}", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    Text("${tech.specialization}  â€¢  ${tech.openRequestsCount} ${stringResource(R.string.open_word)}", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
                             }
                         }
                     }
                 },
                 confirmButton = {},
-                dismissButton = { TextButton(onClick = { vm.onEvent(RequestDetailEvent.HideAssignDialog) }) { Text(stringResource(R.string.cancel)) } }
+                dismissButton = { TextButton(onClick = { onEvent(RequestDetailEvent.HideAssignDialog) }) { Text(stringResource(R.string.cancel)) } }
             )
         }
 
         // Update Status dialog
         if (state.showStatusDialog) {
             AlertDialog(
-                onDismissRequest = { vm.onEvent(RequestDetailEvent.HideStatusDialog) },
+                onDismissRequest = { onEvent(RequestDetailEvent.HideStatusDialog) },
                 title = { Text(stringResource(R.string.update_status)) },
                 text = {
                     Column(verticalArrangement = Arrangement.spacedBy(Dimens.SpaceSm)) {
                         RequestStatus.entries.forEach { status ->
-                            TextButton(onClick = { vm.onEvent(RequestDetailEvent.UpdateStatus(status)) }, modifier = Modifier.fillMaxWidth()) {
+                            TextButton(onClick = { onEvent(RequestDetailEvent.UpdateStatus(status)) }, modifier = Modifier.fillMaxWidth()) {
                                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                                     Text(stringResource(status.labelRes), color = MaterialTheme.colorScheme.onSurface)
                                     StatusBadge(status)
@@ -222,7 +246,7 @@ fun RequestDetailScreen(
                     }
                 },
                 confirmButton = {},
-                dismissButton = { TextButton(onClick = { vm.onEvent(RequestDetailEvent.HideStatusDialog) }) { Text(stringResource(R.string.cancel)) } }
+                dismissButton = { TextButton(onClick = { onEvent(RequestDetailEvent.HideStatusDialog) }) { Text(stringResource(R.string.cancel)) } }
             )
         }
     }
@@ -233,5 +257,61 @@ private fun DetailRow(label: String, value: String) {
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         Text(label, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(value, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface)
+    }
+}
+
+// ── Previews ─────────────────────────────────────────────────────────────────
+
+private val previewRequest = MaintenanceRequest(
+    id = "req002",
+    residentId = "r2",
+    residentName = "Sara Ahmed",
+    unit = "A-203",
+    category = Category.ELECTRICAL,
+    priority = Priority.URGENT,
+    title = "Power outlet not working",
+    description = "The outlet in the kitchen stopped working suddenly.",
+    status = RequestStatus.IN_PROGRESS,
+    assignedTechnicianId = "t2",
+    assignedTechnicianName = "Mohamed Samir",
+    submittedAt = "2026-06-27 14:30",
+    updatedAt = "2026-06-28 10:00",
+    scheduledAt = "2026-06-29 10:00"
+)
+
+private val previewTechnicians = listOf(
+    Technician("t1", "Ahmed Hassan", "Plumbing", "+20 100 111 2233", true, 3, 47, 4.8f),
+    Technician("t2", "Mohamed Samir", "Electrical", "+20 100 222 3344", true, 2, 61, 4.7f)
+)
+
+@Preview(showBackground = true, name = "Light")
+@Composable
+private fun PreviewRequestDetailLight() {
+    SyntrixorAdminPreviewTheme(darkTheme = false) {
+        RequestDetailContent(
+            state = RequestDetailState(
+                request = previewRequest,
+                technicians = previewTechnicians,
+                isLoading = false
+            ),
+            onEvent = {},
+            onBack = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Dark")
+@Composable
+private fun PreviewRequestDetailDark() {
+    SyntrixorAdminPreviewTheme(darkTheme = true) {
+        RequestDetailContent(
+            state = RequestDetailState(
+                request = previewRequest,
+                technicians = previewTechnicians,
+                isLoading = false
+            ),
+            onEvent = {},
+            onBack = {}
+        )
     }
 }

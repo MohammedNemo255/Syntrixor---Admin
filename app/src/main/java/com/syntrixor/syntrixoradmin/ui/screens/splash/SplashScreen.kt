@@ -17,11 +17,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.syntrixor.syntrixoradmin.R
 import com.syntrixor.syntrixoradmin.data.AppModule
 import com.syntrixor.syntrixoradmin.ui.theme.Navy
+import com.syntrixor.syntrixoradmin.ui.theme.SyntrixorAdminPreviewTheme
 import com.syntrixor.syntrixoradmin.ui.theme.Violet400
 import com.syntrixor.syntrixoradmin.ui.theme.Violet600
 import com.syntrixor.syntrixoradmin.ui.theme.White
@@ -54,6 +56,13 @@ fun SplashScreen(
         }
     }
 
+    SplashContent()
+}
+
+// ── Stateless UI (previewable) ───────────────────────────────────────────────
+
+@Composable
+private fun SplashContent() {
     Box(
         modifier = Modifier.fillMaxSize().background(Navy),
         contentAlignment = Alignment.Center
@@ -84,5 +93,23 @@ fun SplashScreen(
                 letterSpacing = 1.sp
             )
         }
+    }
+}
+
+// ── Previews ─────────────────────────────────────────────────────────────────
+
+@Preview(showBackground = true, name = "Light")
+@Composable
+private fun PreviewSplashLight() {
+    SyntrixorAdminPreviewTheme(darkTheme = false) {
+        SplashContent()
+    }
+}
+
+@Preview(showBackground = true, name = "Dark")
+@Composable
+private fun PreviewSplashDark() {
+    SyntrixorAdminPreviewTheme(darkTheme = true) {
+        SplashContent()
     }
 }

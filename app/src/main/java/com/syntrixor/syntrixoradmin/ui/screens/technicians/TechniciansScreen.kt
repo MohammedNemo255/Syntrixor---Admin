@@ -31,6 +31,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -39,6 +40,7 @@ import com.syntrixor.syntrixoradmin.data.model.Technician
 import com.syntrixor.syntrixoradmin.ui.components.SearchField
 import com.syntrixor.syntrixoradmin.ui.theme.Dimens
 import com.syntrixor.syntrixoradmin.ui.theme.Success
+import com.syntrixor.syntrixoradmin.ui.theme.SyntrixorAdminPreviewTheme
 import com.syntrixor.syntrixoradmin.ui.theme.TextSecondary
 import com.syntrixor.syntrixoradmin.ui.theme.Violet600
 
@@ -46,6 +48,21 @@ import com.syntrixor.syntrixoradmin.ui.theme.Violet600
 fun TechniciansScreen(modifier: Modifier = Modifier, vm: TechniciansViewModel = viewModel()) {
     val state by vm.state.collectAsState()
 
+    TechniciansContent(
+        state = state,
+        onSearchChange = { vm.setSearch(it) },
+        onRetry = { vm.load() },
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun TechniciansContent(
+    state: TechniciansState,
+    onSearchChange: (String) -> Unit,
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -53,7 +70,7 @@ fun TechniciansScreen(modifier: Modifier = Modifier, vm: TechniciansViewModel = 
     ) {
         SearchField(
             query = state.searchQuery,
-            onQueryChange = { vm.setSearch(it) },
+            onQueryChange = onSearchChange,
             hint = stringResource(R.string.search_technicians),
             modifier = Modifier.padding(horizontal = Dimens.ScreenPaddingHorizontal, vertical = Dimens.SpaceSm)
         )
@@ -67,7 +84,7 @@ fun TechniciansScreen(modifier: Modifier = Modifier, vm: TechniciansViewModel = 
                     Text(state.error ?: "", color = MaterialTheme.colorScheme.error)
                     Spacer(Modifier.height(12.dp))
                     Button(
-                        onClick = { vm.load() },
+                        onClick = onRetry,
                         colors = ButtonDefaults.buttonColors(containerColor = Violet600)
                     ) { Text(stringResource(R.string.retry), color = Color.White) }
                 }
@@ -128,5 +145,39 @@ private fun TechnicianCard(tech: Technician) {
                 color = if (tech.isActive) Success else MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
+    }
+}
+
+// ── Previews ─────────────────────────────────────────────────────────────────
+
+private val previewTechnicians = listOf(
+    Technician("t1", "Ahmed Hassan", "Plumbing", "+20 100 111 2233", true, 3, 47, 4.8f),
+    Technician("t2", "Mohamed Samir", "Electrical", "+20 100 222 3344", true, 2, 61, 4.7f),
+    Technician("t3", "Khaled Ibrahim", "HVAC", "+20 100 333 4455", true, 1, 33, 4.9f),
+    Technician("t4", "Omar Farouk", "Carpentry", "+20 100 444 5566", false, 0, 28, 4.5f),
+    Technician("t5", "Youssef Nasser", "General", "+20 100 555 6677", true, 4, 55, 4.6f),
+)
+
+@Preview(showBackground = true, name = "Light")
+@Composable
+private fun PreviewTechniciansScreenLight() {
+    SyntrixorAdminPreviewTheme(darkTheme = false) {
+        TechniciansContent(
+            state = TechniciansState(technicians = previewTechnicians, isLoading = false),
+            onSearchChange = {},
+            onRetry = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Dark")
+@Composable
+private fun PreviewTechniciansScreenDark() {
+    SyntrixorAdminPreviewTheme(darkTheme = true) {
+        TechniciansContent(
+            state = TechniciansState(technicians = previewTechnicians, isLoading = false),
+            onSearchChange = {},
+            onRetry = {}
+        )
     }
 }

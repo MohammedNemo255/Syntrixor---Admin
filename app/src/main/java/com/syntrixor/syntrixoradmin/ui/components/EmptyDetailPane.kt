@@ -16,7 +16,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.syntrixor.syntrixoradmin.ui.theme.SyntrixorAdminPreviewTheme
 
 /** Placeholder shown in the detail pane of a two-pane (tablet) layout before an item is selected. */
 @Composable
@@ -41,5 +43,23 @@ fun EmptyDetailPane(message: String, modifier: Modifier = Modifier) {
                 textAlign = TextAlign.Center
             )
         }
+    }
+}
+
+// ── Previews ─────────────────────────────────────────────────────────────────
+
+@Preview(showBackground = true, name = "Light")
+@Composable
+private fun PreviewEmptyDetailPaneLight() {
+    SyntrixorAdminPreviewTheme(darkTheme = false) {
+        EmptyDetailPane(message = "Select a resident to view details")
+    }
+}
+
+@Preview(showBackground = true, name = "Dark")
+@Composable
+private fun PreviewEmptyDetailPaneDark() {
+    SyntrixorAdminPreviewTheme(darkTheme = true) {
+        EmptyDetailPane(message = "Select a resident to view details")
     }
 }

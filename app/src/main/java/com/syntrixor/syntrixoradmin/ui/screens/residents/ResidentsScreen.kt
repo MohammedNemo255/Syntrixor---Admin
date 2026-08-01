@@ -31,6 +31,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -39,12 +40,28 @@ import com.syntrixor.syntrixoradmin.data.model.Resident
 import com.syntrixor.syntrixoradmin.ui.components.SearchField
 import com.syntrixor.syntrixoradmin.ui.theme.Dimens
 import com.syntrixor.syntrixoradmin.ui.theme.Info
+import com.syntrixor.syntrixoradmin.ui.theme.SyntrixorAdminPreviewTheme
 import com.syntrixor.syntrixoradmin.ui.theme.Violet600
 
 @Composable
 fun ResidentsScreen(modifier: Modifier = Modifier, vm: ResidentsViewModel = viewModel()) {
     val state by vm.state.collectAsState()
 
+    ResidentsContent(
+        state = state,
+        onSearchChange = { vm.setSearch(it) },
+        onRetry = { vm.load() },
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun ResidentsContent(
+    state: ResidentsState,
+    onSearchChange: (String) -> Unit,
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -52,7 +69,7 @@ fun ResidentsScreen(modifier: Modifier = Modifier, vm: ResidentsViewModel = view
     ) {
         SearchField(
             query = state.searchQuery,
-            onQueryChange = { vm.setSearch(it) },
+            onQueryChange = onSearchChange,
             hint = stringResource(R.string.search_residents),
             modifier = Modifier.padding(horizontal = Dimens.ScreenPaddingHorizontal, vertical = Dimens.SpaceSm)
         )
@@ -66,7 +83,7 @@ fun ResidentsScreen(modifier: Modifier = Modifier, vm: ResidentsViewModel = view
                     Text(state.error ?: "", color = MaterialTheme.colorScheme.error)
                     Spacer(Modifier.height(12.dp))
                     Button(
-                        onClick = { vm.load() },
+                        onClick = onRetry,
                         colors = ButtonDefaults.buttonColors(containerColor = Violet600)
                     ) { Text(stringResource(R.string.retry), color = Color.White) }
                 }
@@ -117,6 +134,39 @@ private fun ResidentCard(resident: Resident) {
         Text(
             stringResource(R.string.floor_label, resident.floor),
             fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = Violet600
+        )
+    }
+}
+
+// ── Previews ─────────────────────────────────────────────────────────────────
+
+private val previewResidents = listOf(
+    Resident("r1", "Nadia Mostafa", "nadia@example.com", "+20 111 100 0011", "A", 1, "A-101", 5, "Jan 2024"),
+    Resident("r2", "Sara Ahmed", "sara@example.com", "+20 111 200 0022", "A", 2, "A-203", 3, "Feb 2024"),
+    Resident("r3", "Hana Khalil", "hana@example.com", "+20 111 300 0033", "B", 1, "B-104", 8, "Mar 2024"),
+    Resident("r4", "Layla Ibrahim", "layla@example.com", "+20 111 400 0044", "B", 3, "B-312", 2, "Apr 2024"),
+)
+
+@Preview(showBackground = true, name = "Light")
+@Composable
+private fun PreviewResidentsScreenLight() {
+    SyntrixorAdminPreviewTheme(darkTheme = false) {
+        ResidentsContent(
+            state = ResidentsState(residents = previewResidents, isLoading = false),
+            onSearchChange = {},
+            onRetry = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Dark")
+@Composable
+private fun PreviewResidentsScreenDark() {
+    SyntrixorAdminPreviewTheme(darkTheme = true) {
+        ResidentsContent(
+            state = ResidentsState(residents = previewResidents, isLoading = false),
+            onSearchChange = {},
+            onRetry = {}
         )
     }
 }
