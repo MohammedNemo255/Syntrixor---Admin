@@ -178,31 +178,35 @@ private fun RequestDetailContent(
                     }
                     item {
                         val isAssigned = req.assignedTechnicianId != null
-                        Row(horizontalArrangement = Arrangement.spacedBy(Dimens.SpaceSm)) {
-                            if (!isAssigned) {
-                                OutlinedButton(
-                                    onClick = { onEvent(RequestDetailEvent.ShowAssignDialog) },
-                                    enabled = !state.isUpdating,
-                                    modifier = Modifier.weight(1f).height(Dimens.ButtonHeight),
-                                    shape = RoundedCornerShape(Dimens.RadiusMd),
-                                    border = androidx.compose.foundation.BorderStroke(1.dp, Violet600)
-                                ) {
-                                    if (state.isUpdating) {
-                                        CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp, color = Violet600)
-                                    } else {
-                                        Text(stringResource(R.string.assign_technician), color = Violet600, fontSize = 13.sp)
+                        val isTerminal = req.status == RequestStatus.COMPLETED ||
+                                         req.status == RequestStatus.CANCELLED
+                        if (!isTerminal) {
+                            Row(horizontalArrangement = Arrangement.spacedBy(Dimens.SpaceSm)) {
+                                if (!isAssigned) {
+                                    OutlinedButton(
+                                        onClick = { onEvent(RequestDetailEvent.ShowAssignDialog) },
+                                        enabled = !state.isUpdating,
+                                        modifier = Modifier.weight(1f).height(Dimens.ButtonHeight),
+                                        shape = RoundedCornerShape(Dimens.RadiusMd),
+                                        border = androidx.compose.foundation.BorderStroke(1.dp, Violet600)
+                                    ) {
+                                        if (state.isUpdating) {
+                                            CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp, color = Violet600)
+                                        } else {
+                                            Text(stringResource(R.string.assign_technician), color = Violet600, fontSize = 13.sp)
+                                        }
                                     }
                                 }
-                            }
-                            Button(
-                                onClick = { onEvent(RequestDetailEvent.ShowStatusDialog) },
-                                enabled = !state.isUpdating,
-                                modifier = if (!isAssigned) Modifier.weight(1f).height(Dimens.ButtonHeight)
-                                           else Modifier.fillMaxWidth().height(Dimens.ButtonHeight),
-                                shape = RoundedCornerShape(Dimens.RadiusMd),
-                                colors = ButtonDefaults.buttonColors(containerColor = Violet600)
-                            ) {
-                                Text(stringResource(R.string.update_status), color = Color.White, fontSize = 13.sp)
+                                Button(
+                                    onClick = { onEvent(RequestDetailEvent.ShowStatusDialog) },
+                                    enabled = !state.isUpdating,
+                                    modifier = if (!isAssigned) Modifier.weight(1f).height(Dimens.ButtonHeight)
+                                               else Modifier.fillMaxWidth().height(Dimens.ButtonHeight),
+                                    shape = RoundedCornerShape(Dimens.RadiusMd),
+                                    colors = ButtonDefaults.buttonColors(containerColor = Violet600)
+                                ) {
+                                    Text(stringResource(R.string.update_status), color = Color.White, fontSize = 13.sp)
+                                }
                             }
                         }
                     }
@@ -239,7 +243,9 @@ private fun RequestDetailContent(
                 title = { Text(stringResource(R.string.update_status)) },
                 text = {
                     Column(verticalArrangement = Arrangement.spacedBy(Dimens.SpaceSm)) {
-                        RequestStatus.entries.forEach { status ->
+                        RequestStatus.entries
+                            .filter { it.ordinal > (state.request?.status?.ordinal ?: -1) }
+                            .forEach { status ->
                             TextButton(onClick = { onEvent(RequestDetailEvent.UpdateStatus(status)) }, modifier = Modifier.fillMaxWidth()) {
                                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                                     Text(stringResource(status.labelRes), color = MaterialTheme.colorScheme.onSurface)
