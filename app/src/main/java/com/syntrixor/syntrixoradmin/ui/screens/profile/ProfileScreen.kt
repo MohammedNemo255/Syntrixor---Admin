@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -116,10 +117,16 @@ private fun ProfileContent(
         containerColor = MaterialTheme.colorScheme.background,
         modifier = modifier
     ) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(innerPadding),
+            contentAlignment = Alignment.TopCenter
+        ) {
+        Column(
+            modifier = Modifier
+                .widthIn(max = 560.dp)
+                .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(Dimens.ScreenPaddingHorizontal),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -223,6 +230,7 @@ private fun ProfileContent(
                 )
             }
         }
+        } // Box
 
         if (showLogoutDialog) {
             AlertDialog(
