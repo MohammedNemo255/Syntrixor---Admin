@@ -75,7 +75,10 @@
     <string name="inactive">Inactive</string>
     <string name="specialization">Specialization</string>
     <string name="open_requests">Open Requests</string>
+    <string name="completed">Completed</string>
+    <string name="rating">Rating</string>
     <string name="search_technicians">Search technicians…</string>
+    <string name="select_a_technician">Select a technician to view details</string>
     <!-- %1$d open  •  %2$d done  •  ★ %3$.1f -->
     <string name="tech_stats">%1$d open  •  %2$d done  •  ★ %3$.1f</string>
 
@@ -84,7 +87,10 @@
     <string name="no_residents">No residents found</string>
     <string name="building">Building</string>
     <string name="floor">Floor</string>
+    <string name="phone">Phone</string>
+    <string name="join_date">Joined</string>
     <string name="search_residents">Search residents…</string>
+    <string name="select_a_resident">Select a resident to view details</string>
     <!-- Unit %1$s  •  Bldg %2$s  •  %3$d requests -->
     <string name="resident_stats">Unit %1$s  •  Bldg %2$s  •  %3$d requests</string>
     <!-- Fl %1$d -->

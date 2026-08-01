@@ -75,7 +75,10 @@
     <string name="inactive">غير نشط</string>
     <string name="specialization">التخصص</string>
     <string name="open_requests">طلبات مفتوحة</string>
+    <string name="completed">مكتملة</string>
+    <string name="rating">التقييم</string>
     <string name="search_technicians">بحث في الفنيين…</string>
+    <string name="select_a_technician">اختر فنيًا لعرض التفاصيل</string>
     <string name="tech_stats">%1$d مفتوح  •  %2$d منجز  •  ★ %3$.1f</string>
 
     <!-- Residents -->
@@ -83,7 +86,10 @@
     <string name="no_residents">لا يوجد سكان</string>
     <string name="building">المبنى</string>
     <string name="floor">الطابق</string>
+    <string name="phone">الهاتف</string>
+    <string name="join_date">تاريخ الانضمام</string>
     <string name="search_residents">بحث في السكان…</string>
+    <string name="select_a_resident">اختر ساكنًا لعرض التفاصيل</string>
     <string name="resident_stats">وحدة %1$s  •  مبنى %2$s  •  %3$d طلبات</string>
     <string name="floor_label">ط %1$d</string>
 

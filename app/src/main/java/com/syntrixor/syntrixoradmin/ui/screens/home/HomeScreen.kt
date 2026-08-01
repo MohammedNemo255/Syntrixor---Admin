@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -41,9 +42,13 @@ import com.syntrixor.syntrixoradmin.ui.screens.announcements.AnnouncementsScreen
 import com.syntrixor.syntrixoradmin.ui.screens.announcements.AnnouncementsViewModel
 import com.syntrixor.syntrixoradmin.ui.screens.dashboard.DashboardScreen
 import com.syntrixor.syntrixoradmin.ui.screens.profile.ProfileScreen
+import com.syntrixor.syntrixoradmin.data.model.Resident
+import com.syntrixor.syntrixoradmin.data.model.Technician
 import com.syntrixor.syntrixoradmin.ui.screens.requestdetail.RequestDetailScreen
 import com.syntrixor.syntrixoradmin.ui.screens.requests.RequestsScreen
+import com.syntrixor.syntrixoradmin.ui.screens.residents.ResidentDetailPane
 import com.syntrixor.syntrixoradmin.ui.screens.residents.ResidentsScreen
+import com.syntrixor.syntrixoradmin.ui.screens.technicians.TechnicianDetailPane
 import com.syntrixor.syntrixoradmin.ui.screens.technicians.TechniciansScreen
 import com.syntrixor.syntrixoradmin.ui.theme.SyntrixorAdminPreviewTheme
 import com.syntrixor.syntrixoradmin.ui.theme.Violet600
@@ -228,8 +233,59 @@ private fun HomeContent(
             }
         }
 
-        "technicians" -> TechniciansScreen(modifier = modifier)
-        "residents" -> ResidentsScreen(modifier = modifier)
+        "technicians" -> {
+            if (isTablet) {
+                var selectedTechnician by remember { mutableStateOf<Technician?>(null) }
+                Row(modifier = modifier) {
+                    TechniciansScreen(
+                        modifier = Modifier.weight(0.4f).fillMaxHeight(),
+                        onTechnicianClick = { selectedTechnician = it }
+                    )
+                    VerticalDivider()
+                    if (selectedTechnician != null) {
+                        TechnicianDetailPane(
+                            technician = selectedTechnician!!,
+                            onBack = { selectedTechnician = null },
+                            modifier = Modifier.weight(0.6f).fillMaxHeight()
+                        )
+                    } else {
+                        EmptyDetailPane(
+                            message = stringResource(R.string.select_a_technician),
+                            modifier = Modifier.weight(0.6f).fillMaxHeight()
+                        )
+                    }
+                }
+            } else {
+                TechniciansScreen(modifier = modifier)
+            }
+        }
+
+        "residents" -> {
+            if (isTablet) {
+                var selectedResident by remember { mutableStateOf<Resident?>(null) }
+                Row(modifier = modifier) {
+                    ResidentsScreen(
+                        modifier = Modifier.weight(0.4f).fillMaxHeight(),
+                        onResidentClick = { selectedResident = it }
+                    )
+                    VerticalDivider()
+                    if (selectedResident != null) {
+                        ResidentDetailPane(
+                            resident = selectedResident!!,
+                            onBack = { selectedResident = null },
+                            modifier = Modifier.weight(0.6f).fillMaxHeight()
+                        )
+                    } else {
+                        EmptyDetailPane(
+                            message = stringResource(R.string.select_a_resident),
+                            modifier = Modifier.weight(0.6f).fillMaxHeight()
+                        )
+                    }
+                }
+            } else {
+                ResidentsScreen(modifier = modifier)
+            }
+        }
         "announcements" -> AnnouncementsScreen(
             modifier = modifier,
             vm = announcementsVm,

@@ -1,5 +1,6 @@
 package com.syntrixor.syntrixoradmin.ui.screens.technicians
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -45,13 +46,18 @@ import com.syntrixor.syntrixoradmin.ui.theme.TextSecondary
 import com.syntrixor.syntrixoradmin.ui.theme.Violet600
 
 @Composable
-fun TechniciansScreen(modifier: Modifier = Modifier, vm: TechniciansViewModel = viewModel()) {
+fun TechniciansScreen(
+    modifier: Modifier = Modifier,
+    onTechnicianClick: (Technician) -> Unit = {},
+    vm: TechniciansViewModel = viewModel()
+) {
     val state by vm.state.collectAsState()
 
     TechniciansContent(
         state = state,
         onSearchChange = { vm.setSearch(it) },
         onRetry = { vm.load() },
+        onTechnicianClick = onTechnicianClick,
         modifier = modifier
     )
 }
@@ -61,6 +67,7 @@ private fun TechniciansContent(
     state: TechniciansState,
     onSearchChange: (String) -> Unit,
     onRetry: () -> Unit,
+    onTechnicianClick: (Technician) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -97,19 +104,22 @@ private fun TechniciansContent(
                 contentPadding = PaddingValues(Dimens.ScreenPaddingHorizontal),
                 verticalArrangement = Arrangement.spacedBy(Dimens.SpaceSm)
             ) {
-                items(state.technicians) { tech -> TechnicianCard(tech) }
+                items(state.technicians) { tech ->
+                    TechnicianCard(tech, onClick = { onTechnicianClick(tech) })
+                }
             }
         }
     }
 }
 
 @Composable
-private fun TechnicianCard(tech: Technician) {
+private fun TechnicianCard(tech: Technician, onClick: () -> Unit = {}) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(Dimens.RadiusMd))
             .background(MaterialTheme.colorScheme.surface)
+            .clickable { onClick() }
             .padding(Dimens.SpaceLg),
         verticalAlignment = Alignment.CenterVertically
     ) {

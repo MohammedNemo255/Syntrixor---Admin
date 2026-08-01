@@ -177,24 +177,28 @@ private fun RequestDetailContent(
                         }
                     }
                     item {
+                        val isAssigned = req.assignedTechnicianId != null
                         Row(horizontalArrangement = Arrangement.spacedBy(Dimens.SpaceSm)) {
-                            OutlinedButton(
-                                onClick = { onEvent(RequestDetailEvent.ShowAssignDialog) },
-                                enabled = !state.isUpdating,
-                                modifier = Modifier.weight(1f).height(Dimens.ButtonHeight),
-                                shape = RoundedCornerShape(Dimens.RadiusMd),
-                                border = androidx.compose.foundation.BorderStroke(1.dp, Violet600)
-                            ) {
-                                if (state.isUpdating) {
-                                    CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp, color = Violet600)
-                                } else {
-                                    Text(stringResource(R.string.assign_technician), color = Violet600, fontSize = 13.sp)
+                            if (!isAssigned) {
+                                OutlinedButton(
+                                    onClick = { onEvent(RequestDetailEvent.ShowAssignDialog) },
+                                    enabled = !state.isUpdating,
+                                    modifier = Modifier.weight(1f).height(Dimens.ButtonHeight),
+                                    shape = RoundedCornerShape(Dimens.RadiusMd),
+                                    border = androidx.compose.foundation.BorderStroke(1.dp, Violet600)
+                                ) {
+                                    if (state.isUpdating) {
+                                        CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp, color = Violet600)
+                                    } else {
+                                        Text(stringResource(R.string.assign_technician), color = Violet600, fontSize = 13.sp)
+                                    }
                                 }
                             }
                             Button(
                                 onClick = { onEvent(RequestDetailEvent.ShowStatusDialog) },
                                 enabled = !state.isUpdating,
-                                modifier = Modifier.weight(1f).height(Dimens.ButtonHeight),
+                                modifier = if (!isAssigned) Modifier.weight(1f).height(Dimens.ButtonHeight)
+                                           else Modifier.fillMaxWidth().height(Dimens.ButtonHeight),
                                 shape = RoundedCornerShape(Dimens.RadiusMd),
                                 colors = ButtonDefaults.buttonColors(containerColor = Violet600)
                             ) {
