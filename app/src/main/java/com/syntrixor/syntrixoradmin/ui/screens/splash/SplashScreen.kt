@@ -20,14 +20,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.getValue
 import com.syntrixor.syntrixoradmin.R
 import com.syntrixor.syntrixoradmin.data.AppModule
-import com.syntrixor.syntrixoradmin.ui.theme.Navy
+import com.syntrixor.syntrixoradmin.ui.theme.ForceStatusBarIcons
 import com.syntrixor.syntrixoradmin.ui.theme.SyntrixorAdminPreviewTheme
-import com.syntrixor.syntrixoradmin.ui.theme.Violet400
 import com.syntrixor.syntrixoradmin.ui.theme.Violet600
-import com.syntrixor.syntrixoradmin.ui.theme.White
 import com.syntrixor.syntrixoradmin.utils.AuthPreferences
+import com.syntrixor.syntrixoradmin.utils.ThemeManager
 import kotlinx.coroutines.delay
 
 @Composable
@@ -63,8 +64,13 @@ fun SplashScreen(
 
 @Composable
 private fun SplashContent() {
+    val isDark by ThemeManager.isDarkMode
+    ForceStatusBarIcons(useLightIcons = isDark)
+
     Box(
-        modifier = Modifier.fillMaxSize().background(Navy),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -83,13 +89,13 @@ private fun SplashContent() {
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = 4.sp,
-                color = White
+                color = MaterialTheme.colorScheme.onBackground
             )
             Spacer(modifier = Modifier.height(6.dp))
             Text(
                 text = stringResource(R.string.login_title),
                 fontSize = 13.sp,
-                color = Violet400,
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
                 letterSpacing = 1.sp
             )
         }

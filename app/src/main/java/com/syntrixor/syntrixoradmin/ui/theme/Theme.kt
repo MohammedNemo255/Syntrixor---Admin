@@ -6,6 +6,7 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
@@ -79,6 +80,33 @@ fun SyntrixorAdminTheme(content: @Composable () -> Unit) {
             typography = Typography,
             content = content
         )
+    }
+}
+
+/**
+ * Forces the status/navigation bar icon color for as long as this composable stays
+ * in composition, then restores whatever the current [ThemeManager] mode calls for on
+ * exit. Use this on screens with a background that doesn't follow light/dark mode
+ * (e.g. Login and Splash, which are always on a dark Navy background) — otherwise
+ * their status bar icons are dictated by the app's light/dark mode instead of the
+ * screen's actual background and can end up invisible (dark icons on a dark screen).
+ */
+@Composable
+fun ForceStatusBarIcons(useLightIcons: Boolean) {
+    val view = LocalView.current
+    if (view.isInEditMode) return
+
+    DisposableEffect(useLightIcons) {
+        val window = (view.context as Activity).window
+        val controller = WindowCompat.getInsetsController(window, view)
+        controller.isAppearanceLightStatusBars = !useLightIcons
+        controller.isAppearanceLightNavigationBars = !useLightIcons
+
+        onDispose {
+            val isDarkMode = ThemeManager.isDarkMode.value
+            controller.isAppearanceLightStatusBars = !isDarkMode
+            controller.isAppearanceLightNavigationBars = !isDarkMode
+        }
     }
 }
 

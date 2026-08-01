@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -20,9 +21,11 @@ import com.syntrixor.syntrixoradmin.ui.screens.home.HomeScreen
 import com.syntrixor.syntrixoradmin.ui.screens.login.LoginScreen
 import com.syntrixor.syntrixoradmin.ui.screens.requestdetail.RequestDetailScreen
 import com.syntrixor.syntrixoradmin.ui.screens.splash.SplashScreen
+import com.syntrixor.syntrixoradmin.utils.AuthPreferences
 
 @Composable
 fun NavGraph(navController: NavHostController) {
+    val context = LocalContext.current
     NavHost(navController = navController, startDestination = Screen.Splash.route) {
 
         composable(Screen.Admins.route) { backStackEntry ->
@@ -96,6 +99,7 @@ fun NavGraph(navController: NavHostController) {
                     navController.navigate(Screen.Admins.route)
                 },
                 onLogout = {
+                    AuthPreferences.clearCredentials(context)
                     navController.navigate(Screen.Login.route) {
                         popUpTo(Screen.Home.route) { inclusive = true }
                     }
