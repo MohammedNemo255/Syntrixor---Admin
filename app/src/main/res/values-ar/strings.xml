@@ -1,0 +1,188 @@
+<resources>
+    <string name="app_name">سينتريكسور المشرف</string>
+
+    <!-- Auth -->
+    <string name="login_title">بوابة المشرف</string>
+    <string name="login_subtitle">سجّل دخولك لإدارة المجمع السكني</string>
+    <string name="email_hint">البريد الإلكتروني</string>
+    <string name="password_hint">كلمة المرور</string>
+    <string name="sign_in">تسجيل الدخول</string>
+    <string name="signing_in">جارٍ التسجيل…</string>
+    <string name="remember_me">تذكّرني</string>
+    <string name="error_email_empty">البريد الإلكتروني مطلوب</string>
+    <string name="error_email_invalid">أدخل بريدًا إلكترونيًا صحيحًا</string>
+    <string name="error_password_empty">كلمة المرور مطلوبة</string>
+    <string name="error_password_short">كلمة المرور يجب أن تكون 6 أحرف على الأقل</string>
+    <string name="error_invalid_credentials">البريد الإلكتروني أو كلمة المرور غير صحيحة</string>
+    <string name="error_network">خطأ في الشبكة. يرجى المحاولة مجددًا.</string>
+    <string name="error_unknown">حدث خطأ ما. يرجى المحاولة مجددًا.</string>
+
+    <!-- Navigation -->
+    <string name="nav_dashboard">الرئيسية</string>
+    <string name="nav_requests">الطلبات</string>
+    <string name="nav_technicians">الفنيون</string>
+    <string name="nav_residents">السكان</string>
+    <string name="nav_announcements">إعلانات</string>
+    <string name="nav_profile">الملف</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_title">لوحة التحكم</string>
+    <string name="total_requests">إجمالي الطلبات</string>
+    <string name="pending_requests">قيد الانتظار</string>
+    <string name="in_progress_requests">جارٍ التنفيذ</string>
+    <string name="completed_requests">مكتملة</string>
+    <string name="recent_requests">أحدث الطلبات</string>
+    <string name="view_all">عرض الكل</string>
+    <string name="active_technicians">الفنيون النشطون</string>
+    <string name="total_residents">إجمالي السكان</string>
+    <string name="stat_total">الإجمالي</string>
+    <string name="stat_technicians">فنيون</string>
+    <string name="stat_residents">سكان</string>
+
+    <!-- Requests -->
+    <string name="requests_title">طلبات الصيانة</string>
+    <string name="filter_all">الكل</string>
+    <string name="filter_pending">قيد الانتظار</string>
+    <string name="filter_in_progress">جارٍ التنفيذ</string>
+    <string name="filter_completed">مكتمل</string>
+    <string name="filter_cancelled">ملغي</string>
+    <string name="no_requests">لا توجد طلبات</string>
+    <string name="retry">إعادة المحاولة</string>
+    <string name="search_requests">بحث في الطلبات…</string>
+
+    <!-- Request Detail -->
+    <string name="request_detail_title">تفاصيل الطلب</string>
+    <string name="assign_technician">تعيين فني</string>
+    <string name="update_status">تحديث الحالة</string>
+    <string name="request_id">رقم الطلب</string>
+    <string name="submitted_by">مقدَّم من</string>
+    <string name="unit">الوحدة</string>
+    <string name="category">الفئة</string>
+    <string name="priority">الأولوية</string>
+    <string name="submitted_on">تاريخ التقديم</string>
+    <string name="description">الوصف</string>
+    <string name="assigned_to">مُسنَد إلى</string>
+    <string name="unassigned">غير مُسنَد</string>
+    <string name="status_updated">تم تحديث الحالة بنجاح</string>
+    <string name="technician_assigned">تم تعيين الفني بنجاح</string>
+    <string name="request_not_found">الطلب غير موجود</string>
+
+    <!-- Technicians -->
+    <string name="technicians_title">الفنيون</string>
+    <string name="no_technicians">لا يوجد فنيون</string>
+    <string name="active">نشط</string>
+    <string name="inactive">غير نشط</string>
+    <string name="specialization">التخصص</string>
+    <string name="open_requests">طلبات مفتوحة</string>
+    <string name="search_technicians">بحث في الفنيين…</string>
+    <string name="tech_stats">%1$d مفتوح  •  %2$d منجز  •  ★ %3$.1f</string>
+
+    <!-- Residents -->
+    <string name="residents_title">السكان</string>
+    <string name="no_residents">لا يوجد سكان</string>
+    <string name="building">المبنى</string>
+    <string name="floor">الطابق</string>
+    <string name="search_residents">بحث في السكان…</string>
+    <string name="resident_stats">وحدة %1$s  •  مبنى %2$s  •  %3$d طلبات</string>
+    <string name="floor_label">ط %1$d</string>
+
+    <!-- Announcements -->
+    <string name="announcements_title">الإعلانات</string>
+    <string name="no_announcements">لا توجد إعلانات بعد</string>
+    <string name="new_announcement">إعلان جديد</string>
+    <string name="announcement_title_hint">العنوان</string>
+    <string name="announcement_body_hint">نص الرسالة</string>
+    <string name="post">نشر</string>
+    <string name="announcement_posted">تم نشر الإعلان بنجاح</string>
+    <string name="ann_cat_general">عام</string>
+    <string name="ann_cat_maintenance">صيانة</string>
+    <string name="ann_cat_emergency">طارئ</string>
+    <string name="ann_cat_event">فعالية</string>
+    <string name="ann_title_placeholder">عنوان الإعلان…</string>
+    <string name="write_announcement">ماذا تريد أن تُعلن؟</string>
+    <string name="all_residents">جميع السكان</string>
+    <string name="ann_category">الفئة</string>
+    <string name="ann_priority">الأولوية</string>
+    <string name="ann_preview">معاينة</string>
+    <string name="target_audience">الجمهور المستهدف</string>
+    <string name="target_building_a">مبنى أ</string>
+    <string name="target_building_b">مبنى ب</string>
+    <string name="target_building_c">مبنى ج</string>
+    <string name="target_building_d">مبنى د</string>
+    <string name="select_time">اختر الوقت</string>
+    <string name="scheduled_for">مجدول لـ %s</string>
+    <string name="coming_soon">قريباً!</string>
+    <string name="edit_announcement">تعديل الإعلان</string>
+    <string name="ann_edit">تعديل</string>
+    <string name="ann_delete">حذف</string>
+    <string name="ann_deactivate">تعطيل</string>
+    <string name="ann_activate">تفعيل</string>
+    <string name="ann_update">تحديث</string>
+    <string name="status_active">نشط</string>
+    <string name="status_inactive">غير نشط</string>
+    <string name="status_scheduled">مجدول</string>
+
+    <!-- Category labels -->
+    <string name="cat_plumbing">سباكة</string>
+    <string name="cat_electrical">كهرباء</string>
+    <string name="cat_hvac">تكييف هواء</string>
+    <string name="cat_carpentry">نجارة</string>
+    <string name="cat_painting">دهانات</string>
+    <string name="cat_cleaning">نظافة</string>
+    <string name="cat_elevator">مصعد</string>
+    <string name="cat_security">أمن</string>
+    <string name="cat_other">أخرى</string>
+
+    <!-- Priority labels -->
+    <string name="priority_low">منخفضة</string>
+    <string name="priority_medium">متوسطة</string>
+    <string name="priority_high">عالية</string>
+    <string name="priority_urgent">عاجل</string>
+
+    <!-- Misc UI -->
+    <string name="navigate_back">رجوع</string>
+    <string name="admin_user">المشرف</string>
+    <string name="open_word">مفتوح</string>
+    <string name="ok">موافق</string>
+    <string name="brand_name">SYNTRIXOR</string>
+    <string name="cd_attach_image">إرفاق صورة</string>
+    <string name="cd_target_building">تحديد المبنى</string>
+    <string name="cd_schedule">جدولة</string>
+
+    <!-- Profile -->
+    <string name="profile_title">الملف الشخصي</string>
+    <string name="admin_role">مدير النظام</string>
+    <string name="dark_mode">الوضع الداكن</string>
+    <string name="arabic_language">اللغة العربية</string>
+    <string name="language">اللغة</string>
+    <string name="language_english">الإنجليزية</string>
+    <string name="language_arabic">العربية</string>
+    <string name="logout">تسجيل الخروج</string>
+    <string name="logout_confirm">هل أنت متأكد من تسجيل الخروج؟</string>
+    <string name="cancel">إلغاء</string>
+    <string name="version">الإصدار</string>
+    <string name="app_version">1.0.0</string>
+
+    <!-- Admin Management -->
+    <string name="admins_title">إدارة المشرفين</string>
+    <string name="no_admins">لا يوجد مشرفون</string>
+    <string name="new_admin">مشرف جديد</string>
+    <string name="admin_detail_title">تفاصيل المشرف</string>
+    <string name="manage_admins">إدارة المشرفين</string>
+    <string name="super_admin_label">مشرف رئيسي</string>
+    <string name="category_admin_label">مشرف فئة</string>
+    <string name="admin_active">نشط</string>
+    <string name="admin_inactive">غير نشط</string>
+    <string name="admin_name_hint">الاسم الكامل</string>
+    <string name="admin_phone_hint">رقم الهاتف</string>
+    <string name="admin_saved">تم حفظ المشرف بنجاح</string>
+    <string name="admin_created">تم إنشاء المشرف بنجاح</string>
+    <string name="save_changes">حفظ التغييرات</string>
+    <string name="create_admin_btn">إنشاء مشرف</string>
+    <string name="assigned_categories">الفئات المخصصة</string>
+    <string name="super_admin_note">بدون فئات = مشرف رئيسي (يرى كل شيء)</string>
+    <string name="search_admins">بحث في المشرفين…</string>
+    <string name="error_name_empty">الاسم مطلوب</string>
+    <string name="error_email_taken">البريد الإلكتروني مستخدم بالفعل</string>
+    <string name="account_status">حالة الحساب</string>
+</resources>

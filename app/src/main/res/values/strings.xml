@@ -1,0 +1,191 @@
+<resources>
+    <string name="app_name">Syntrixor Admin</string>
+
+    <!-- Auth -->
+    <string name="login_title">Admin Portal</string>
+    <string name="login_subtitle">Sign in to manage your compound</string>
+    <string name="email_hint">Email address</string>
+    <string name="password_hint">Password</string>
+    <string name="sign_in">Sign In</string>
+    <string name="signing_in">Signing in…</string>
+    <string name="remember_me">Remember me</string>
+    <string name="error_email_empty">Email is required</string>
+    <string name="error_email_invalid">Enter a valid email</string>
+    <string name="error_password_empty">Password is required</string>
+    <string name="error_password_short">Password must be at least 6 characters</string>
+    <string name="error_invalid_credentials">Invalid email or password</string>
+    <string name="error_network">Network error. Please try again.</string>
+    <string name="error_unknown">Something went wrong. Please try again.</string>
+
+    <!-- Navigation -->
+    <string name="nav_dashboard">Dashboard</string>
+    <string name="nav_requests">Requests</string>
+    <string name="nav_technicians">Technicians</string>
+    <string name="nav_residents">Residents</string>
+    <string name="nav_announcements">Announce</string>
+    <string name="nav_profile">Profile</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_title">Dashboard</string>
+    <string name="total_requests">Total Requests</string>
+    <string name="pending_requests">Pending</string>
+    <string name="in_progress_requests">In Progress</string>
+    <string name="completed_requests">Completed</string>
+    <string name="recent_requests">Recent Requests</string>
+    <string name="view_all">View All</string>
+    <string name="active_technicians">Active Technicians</string>
+    <string name="total_residents">Total Residents</string>
+    <string name="stat_total">Total</string>
+    <string name="stat_technicians">Technicians</string>
+    <string name="stat_residents">Residents</string>
+
+    <!-- Requests -->
+    <string name="requests_title">Maintenance Requests</string>
+    <string name="filter_all">All</string>
+    <string name="filter_pending">Pending</string>
+    <string name="filter_in_progress">In Progress</string>
+    <string name="filter_completed">Completed</string>
+    <string name="filter_cancelled">Cancelled</string>
+    <string name="no_requests">No requests found</string>
+    <string name="retry">Retry</string>
+    <string name="search_requests">Search requests…</string>
+
+    <!-- Request Detail -->
+    <string name="request_detail_title">Request Details</string>
+    <string name="assign_technician">Assign Technician</string>
+    <string name="update_status">Update Status</string>
+    <string name="request_id">Request ID</string>
+    <string name="submitted_by">Submitted By</string>
+    <string name="unit">Unit</string>
+    <string name="category">Category</string>
+    <string name="priority">Priority</string>
+    <string name="submitted_on">Submitted On</string>
+    <string name="description">Description</string>
+    <string name="assigned_to">Assigned To</string>
+    <string name="unassigned">Unassigned</string>
+    <string name="status_updated">Status updated successfully</string>
+    <string name="technician_assigned">Technician assigned successfully</string>
+    <string name="request_not_found">Request not found</string>
+
+    <!-- Technicians -->
+    <string name="technicians_title">Technicians</string>
+    <string name="no_technicians">No technicians found</string>
+    <string name="active">Active</string>
+    <string name="inactive">Inactive</string>
+    <string name="specialization">Specialization</string>
+    <string name="open_requests">Open Requests</string>
+    <string name="search_technicians">Search technicians…</string>
+    <!-- %1$d open  •  %2$d done  •  ★ %3$.1f -->
+    <string name="tech_stats">%1$d open  •  %2$d done  •  ★ %3$.1f</string>
+
+    <!-- Residents -->
+    <string name="residents_title">Residents</string>
+    <string name="no_residents">No residents found</string>
+    <string name="building">Building</string>
+    <string name="floor">Floor</string>
+    <string name="search_residents">Search residents…</string>
+    <!-- Unit %1$s  •  Bldg %2$s  •  %3$d requests -->
+    <string name="resident_stats">Unit %1$s  •  Bldg %2$s  •  %3$d requests</string>
+    <!-- Fl %1$d -->
+    <string name="floor_label">Fl %1$d</string>
+
+    <!-- Announcements -->
+    <string name="announcements_title">Announcements</string>
+    <string name="no_announcements">No announcements yet</string>
+    <string name="new_announcement">New Announcement</string>
+    <string name="announcement_title_hint">Title</string>
+    <string name="announcement_body_hint">Message</string>
+    <string name="post">Post</string>
+    <string name="announcement_posted">Announcement posted successfully</string>
+    <string name="ann_cat_general">General</string>
+    <string name="ann_cat_maintenance">Maintenance</string>
+    <string name="ann_cat_emergency">Emergency</string>
+    <string name="ann_cat_event">Event</string>
+    <string name="ann_title_placeholder">Announcement title…</string>
+    <string name="write_announcement">What would you like to announce?</string>
+    <string name="all_residents">All Residents</string>
+    <string name="ann_category">Category</string>
+    <string name="ann_priority">Priority</string>
+    <string name="ann_preview">Preview</string>
+    <string name="target_audience">Target Audience</string>
+    <string name="target_building_a">Building A</string>
+    <string name="target_building_b">Building B</string>
+    <string name="target_building_c">Building C</string>
+    <string name="target_building_d">Building D</string>
+    <string name="select_time">Select Time</string>
+    <string name="scheduled_for">Scheduled for %s</string>
+    <string name="coming_soon">Coming Soon!</string>
+    <string name="edit_announcement">Edit Announcement</string>
+    <string name="ann_edit">Edit</string>
+    <string name="ann_delete">Delete</string>
+    <string name="ann_deactivate">Deactivate</string>
+    <string name="ann_activate">Activate</string>
+    <string name="ann_update">Update</string>
+    <string name="status_active">Active</string>
+    <string name="status_inactive">Inactive</string>
+    <string name="status_scheduled">Scheduled</string>
+
+    <!-- Category labels -->
+    <string name="cat_plumbing">Plumbing</string>
+    <string name="cat_electrical">Electrical</string>
+    <string name="cat_hvac">HVAC</string>
+    <string name="cat_carpentry">Carpentry</string>
+    <string name="cat_painting">Painting</string>
+    <string name="cat_cleaning">Cleaning</string>
+    <string name="cat_elevator">Elevator</string>
+    <string name="cat_security">Security</string>
+    <string name="cat_other">Other</string>
+
+    <!-- Priority labels -->
+    <string name="priority_low">Low</string>
+    <string name="priority_medium">Medium</string>
+    <string name="priority_high">High</string>
+    <string name="priority_urgent">Urgent</string>
+
+    <!-- Misc UI -->
+    <string name="navigate_back">Back</string>
+    <string name="admin_user">Admin User</string>
+    <string name="open_word">open</string>
+    <string name="ok">OK</string>
+    <string name="brand_name">SYNTRIXOR</string>
+    <string name="cd_attach_image">Attach image</string>
+    <string name="cd_target_building">Target building</string>
+    <string name="cd_schedule">Schedule</string>
+
+    <!-- Profile -->
+    <string name="profile_title">Profile</string>
+    <string name="admin_role">System Administrator</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="arabic_language">Arabic Language</string>
+    <string name="language">Language</string>
+    <string name="language_english">English</string>
+    <string name="language_arabic">Arabic</string>
+    <string name="logout">Log Out</string>
+    <string name="logout_confirm">Are you sure you want to log out?</string>
+    <string name="cancel">Cancel</string>
+    <string name="version">Version</string>
+    <string name="app_version">1.0.0</string>
+
+    <!-- Admin Management -->
+    <string name="admins_title">Manage Admins</string>
+    <string name="no_admins">No admins found</string>
+    <string name="new_admin">New Admin</string>
+    <string name="admin_detail_title">Admin Details</string>
+    <string name="manage_admins">Manage Admins</string>
+    <string name="super_admin_label">Super Admin</string>
+    <string name="category_admin_label">Category Admin</string>
+    <string name="admin_active">Active</string>
+    <string name="admin_inactive">Inactive</string>
+    <string name="admin_name_hint">Full name</string>
+    <string name="admin_phone_hint">Phone number</string>
+    <string name="admin_saved">Admin saved successfully</string>
+    <string name="admin_created">Admin created successfully</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="create_admin_btn">Create Admin</string>
+    <string name="assigned_categories">Assigned Categories</string>
+    <string name="super_admin_note">No categories selected = Super Admin (sees everything)</string>
+    <string name="search_admins">Search admins…</string>
+    <string name="error_name_empty">Name is required</string>
+    <string name="error_email_taken">Email is already in use</string>
+    <string name="account_status">Account Status</string>
+</resources>
