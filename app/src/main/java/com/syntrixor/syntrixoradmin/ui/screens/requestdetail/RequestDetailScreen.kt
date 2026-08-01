@@ -249,11 +249,13 @@ private fun RequestDetailContent(
                 title = { Text(stringResource(R.string.update_status)) },
                 text = {
                     Column(verticalArrangement = Arrangement.spacedBy(Dimens.SpaceSm)) {
+                        val isAssigned = state.request?.assignedTechnicianId != null
                         val availableStatuses = if (FeatureFlags.ALLOW_FREE_STATUS_CHANGE)
                             RequestStatus.entries
                         else
-                            RequestStatus.entries.filter {
-                                it.ordinal > (state.request?.status?.ordinal ?: -1)
+                            RequestStatus.entries.filter { status ->
+                                status.ordinal > (state.request?.status?.ordinal ?: -1) &&
+                                (isAssigned || status == RequestStatus.CANCELLED)
                             }
                         availableStatuses.forEach { status ->
                             TextButton(onClick = { onEvent(RequestDetailEvent.UpdateStatus(status)) }, modifier = Modifier.fillMaxWidth()) {
