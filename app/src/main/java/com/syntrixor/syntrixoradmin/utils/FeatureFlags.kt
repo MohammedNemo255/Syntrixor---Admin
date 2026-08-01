@@ -17,4 +17,8 @@ object FeatureFlags {
     // true  → "Manage Admins" section appears in Profile for super admins
     // false → feature hidden entirely
     const val ADMIN_MANAGEMENT = true
+
+    // true  → any status can be selected regardless of current status (old behaviour)
+    // false → forward-only transitions; button hidden on COMPLETED / CANCELLED
+    const val ALLOW_FREE_STATUS_CHANGE = false
 }

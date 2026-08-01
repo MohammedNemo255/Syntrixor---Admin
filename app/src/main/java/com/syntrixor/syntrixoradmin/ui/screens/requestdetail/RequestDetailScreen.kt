@@ -54,6 +54,7 @@ import com.syntrixor.syntrixoradmin.data.model.Technician
 import com.syntrixor.syntrixoradmin.ui.components.StatusBadge
 import com.syntrixor.syntrixoradmin.ui.components.SyntrixorTopBar
 import com.syntrixor.syntrixoradmin.ui.theme.Dimens
+import com.syntrixor.syntrixoradmin.utils.FeatureFlags
 import com.syntrixor.syntrixoradmin.ui.theme.Success
 import com.syntrixor.syntrixoradmin.ui.theme.SyntrixorAdminPreviewTheme
 import com.syntrixor.syntrixoradmin.ui.theme.Violet600
@@ -178,8 +179,9 @@ private fun RequestDetailContent(
                     }
                     item {
                         val isAssigned = req.assignedTechnicianId != null
-                        val isTerminal = req.status == RequestStatus.COMPLETED ||
-                                         req.status == RequestStatus.CANCELLED
+                        val isTerminal = !FeatureFlags.ALLOW_FREE_STATUS_CHANGE &&
+                                         (req.status == RequestStatus.COMPLETED ||
+                                          req.status == RequestStatus.CANCELLED)
                         if (!isTerminal) {
                             Row(horizontalArrangement = Arrangement.spacedBy(Dimens.SpaceSm)) {
                                 if (!isAssigned) {
@@ -243,9 +245,13 @@ private fun RequestDetailContent(
                 title = { Text(stringResource(R.string.update_status)) },
                 text = {
                     Column(verticalArrangement = Arrangement.spacedBy(Dimens.SpaceSm)) {
-                        RequestStatus.entries
-                            .filter { it.ordinal > (state.request?.status?.ordinal ?: -1) }
-                            .forEach { status ->
+                        val availableStatuses = if (FeatureFlags.ALLOW_FREE_STATUS_CHANGE)
+                            RequestStatus.entries
+                        else
+                            RequestStatus.entries.filter {
+                                it.ordinal > (state.request?.status?.ordinal ?: -1)
+                            }
+                        availableStatuses.forEach { status ->
                             TextButton(onClick = { onEvent(RequestDetailEvent.UpdateStatus(status)) }, modifier = Modifier.fillMaxWidth()) {
                                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                                     Text(stringResource(status.labelRes), color = MaterialTheme.colorScheme.onSurface)
