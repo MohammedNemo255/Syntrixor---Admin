@@ -159,7 +159,7 @@ private fun ProfileContent(
             )
             if (!admin?.email.isNullOrBlank()) {
                 Text(
-                    admin!!.email,
+                    admin.email,
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
