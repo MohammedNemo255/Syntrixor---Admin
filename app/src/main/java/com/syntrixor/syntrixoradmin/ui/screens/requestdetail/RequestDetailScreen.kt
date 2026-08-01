@@ -65,6 +65,7 @@ fun RequestDetailScreen(
     requestId: String,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    onStatusChanged: () -> Unit = {},
     vm: RequestDetailViewModel = viewModel(factory = object : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
@@ -77,6 +78,7 @@ fun RequestDetailScreen(
         state = state,
         onEvent = vm::onEvent,
         onBack = onBack,
+        onStatusChanged = onStatusChanged,
         modifier = modifier
     )
 }
@@ -89,6 +91,7 @@ private fun RequestDetailContent(
     state: RequestDetailState,
     onEvent: (RequestDetailEvent) -> Unit,
     onBack: () -> Unit,
+    onStatusChanged: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -97,6 +100,7 @@ private fun RequestDetailContent(
         state.successMessage?.let {
             snackbarHostState.showSnackbar(it)
             onEvent(RequestDetailEvent.ClearMessage)
+            onStatusChanged()
         }
     }
     LaunchedEffect(state.error) {

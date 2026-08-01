@@ -23,6 +23,7 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -46,6 +47,7 @@ import com.syntrixor.syntrixoradmin.data.model.Resident
 import com.syntrixor.syntrixoradmin.data.model.Technician
 import com.syntrixor.syntrixoradmin.ui.screens.requestdetail.RequestDetailScreen
 import com.syntrixor.syntrixoradmin.ui.screens.requests.RequestsScreen
+import com.syntrixor.syntrixoradmin.ui.screens.requests.RequestsViewModel
 import com.syntrixor.syntrixoradmin.ui.screens.residents.ResidentDetailPane
 import com.syntrixor.syntrixoradmin.ui.screens.residents.ResidentsScreen
 import com.syntrixor.syntrixoradmin.ui.screens.technicians.TechnicianDetailPane
@@ -67,6 +69,7 @@ fun HomeScreen(
     val isTablet = LocalIsTablet.current
 
     val announcementsVm: AnnouncementsViewModel = viewModel()
+    val requestsVm: RequestsViewModel = viewModel()
 
     // Intercept system back press while profile is open
     BackHandler(enabled = showProfile) {
@@ -157,6 +160,7 @@ fun HomeScreen(
                     onNavigateToRequestDetail = onNavigateToRequestDetail,
                     onNavigateToCreateAnnouncement = onNavigateToCreateAnnouncement,
                     announcementsVm = announcementsVm,
+                    requestsVm = requestsVm,
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight()
@@ -170,6 +174,7 @@ fun HomeScreen(
                 onNavigateToRequestDetail = onNavigateToRequestDetail,
                 onNavigateToCreateAnnouncement = onNavigateToCreateAnnouncement,
                 announcementsVm = announcementsVm,
+                requestsVm = requestsVm,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
@@ -186,6 +191,7 @@ private fun HomeContent(
     onNavigateToRequestDetail: (String) -> Unit,
     onNavigateToCreateAnnouncement: () -> Unit,
     announcementsVm: AnnouncementsViewModel,
+    requestsVm: RequestsViewModel,
     modifier: Modifier = Modifier
 ) {
     when (selectedTab) {
@@ -205,17 +211,21 @@ private fun HomeContent(
                         modifier = Modifier
                             .weight(0.4f)
                             .fillMaxHeight(),
-                        onRequestClick = { selectedRequestId = it }
+                        onRequestClick = { selectedRequestId = it },
+                        vm = requestsVm
                     )
                     VerticalDivider()
                     if (selectedRequestId != null) {
-                        RequestDetailScreen(
-                            requestId = selectedRequestId!!,
-                            onBack = { selectedRequestId = null },
-                            modifier = Modifier
-                                .weight(0.6f)
-                                .fillMaxHeight()
-                        )
+                        key(selectedRequestId) {
+                            RequestDetailScreen(
+                                requestId = selectedRequestId!!,
+                                onBack = { selectedRequestId = null },
+                                onStatusChanged = { requestsVm.load() },
+                                modifier = Modifier
+                                    .weight(0.6f)
+                                    .fillMaxHeight()
+                            )
+                        }
                     } else {
                         EmptyDetailPane(
                             message = stringResource(R.string.select_a_request),
@@ -228,7 +238,8 @@ private fun HomeContent(
             } else {
                 RequestsScreen(
                     modifier = modifier,
-                    onRequestClick = onNavigateToRequestDetail
+                    onRequestClick = onNavigateToRequestDetail,
+                    vm = requestsVm
                 )
             }
         }
