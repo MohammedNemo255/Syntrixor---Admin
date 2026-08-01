@@ -47,6 +47,7 @@
     <string name="filter_completed">Completed</string>
     <string name="filter_cancelled">Cancelled</string>
     <string name="no_requests">No requests found</string>
+    <string name="select_a_request">Select a request to view details</string>
     <string name="retry">Retry</string>
     <string name="search_requests">Search requests…</string>
 
@@ -169,6 +170,7 @@
     <!-- Admin Management -->
     <string name="admins_title">Manage Admins</string>
     <string name="no_admins">No admins found</string>
+    <string name="select_an_admin">Select an admin to view details</string>
     <string name="new_admin">New Admin</string>
     <string name="admin_detail_title">Admin Details</string>
     <string name="manage_admins">Manage Admins</string>

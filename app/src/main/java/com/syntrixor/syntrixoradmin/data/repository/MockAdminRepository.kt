@@ -14,6 +14,7 @@ import com.syntrixor.syntrixoradmin.data.model.Resident
 import com.syntrixor.syntrixoradmin.data.model.Technician
 import com.syntrixor.syntrixoradmin.utils.FeatureFlags
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 class MockAdminRepository : IAdminRepository {
 
@@ -366,7 +367,7 @@ class MockAdminRepository : IAdminRepository {
     )
 
     override suspend fun login(email: String, password: String): Result<Admin> {
-        delay(1200)
+        delay(1200.milliseconds)
         val admin = adminAccounts[email.lowercase()]
         return if (admin != null && password == "admin123") {
             AppModule.currentAdmin = admin
@@ -377,7 +378,7 @@ class MockAdminRepository : IAdminRepository {
     }
 
     override suspend fun getDashboardStats(): Result<DashboardStats> {
-        delay(800)
+        delay(800.milliseconds)
         val cats = assignedCats()
         val visibleRequests = if (cats.isEmpty()) requests
         else requests.filter { it.category in cats }
@@ -397,7 +398,7 @@ class MockAdminRepository : IAdminRepository {
     }
 
     override suspend fun getRequests(status: RequestStatus?): Result<List<MaintenanceRequest>> {
-        delay(600)
+        delay(600.milliseconds)
         val cats = assignedCats()
         val filtered = requests
             .filter { status == null || it.status == status }
@@ -406,7 +407,7 @@ class MockAdminRepository : IAdminRepository {
     }
 
     override suspend fun getRequestById(id: String): Result<MaintenanceRequest> {
-        delay(400)
+        delay(400.milliseconds)
         val req = requests.find { it.id == id }
         return if (req != null) Result.success(req)
         else Result.failure(Exception("Request not found"))
@@ -416,7 +417,7 @@ class MockAdminRepository : IAdminRepository {
         requestId: String,
         technicianId: String
     ): Result<MaintenanceRequest> {
-        delay(700)
+        delay(700.milliseconds)
         val index = requests.indexOfFirst { it.id == requestId }
         if (index == -1) return Result.failure(Exception("Request not found"))
         val tech = technicians.find { it.id == technicianId }
@@ -435,7 +436,7 @@ class MockAdminRepository : IAdminRepository {
         requestId: String,
         status: RequestStatus
     ): Result<MaintenanceRequest> {
-        delay(600)
+        delay(600.milliseconds)
         val index = requests.indexOfFirst { it.id == requestId }
         if (index == -1) return Result.failure(Exception("Request not found"))
         val updated = requests[index].copy(status = status, updatedAt = "2026-07-03 09:00")
@@ -444,7 +445,7 @@ class MockAdminRepository : IAdminRepository {
     }
 
     override suspend fun getTechnicians(): Result<List<Technician>> {
-        delay(500)
+        delay(500.milliseconds)
         val cats = assignedCats()
         val visible =
             if (!isCategoryAdmin() || FeatureFlags.CATEGORY_ADMIN_SEE_ALL_TECHNICIANS) technicians
@@ -453,12 +454,12 @@ class MockAdminRepository : IAdminRepository {
     }
 
     override suspend fun getResidents(): Result<List<Resident>> {
-        delay(500)
+        delay(500.milliseconds)
         return Result.success(residents)
     }
 
     override suspend fun getAnnouncements(): Result<List<Announcement>> {
-        delay(400)
+        delay(400.milliseconds)
         val visible =
             if (!isCategoryAdmin() || FeatureFlags.CATEGORY_ADMIN_SEE_ALL_ANNOUNCEMENTS) announcements.toList()
             else announcements.filter { it.category == AnnouncementCategory.MAINTENANCE }
@@ -473,7 +474,7 @@ class MockAdminRepository : IAdminRepository {
         imageUri: String?,
         scheduledAt: String?
     ): Result<Announcement> {
-        delay(700)
+        delay(700.milliseconds)
         val new = Announcement(
             "a${announcements.size + 1}",
             title,
@@ -498,7 +499,7 @@ class MockAdminRepository : IAdminRepository {
         imageUri: String?,
         scheduledAt: String?
     ): Result<Announcement> {
-        delay(600)
+        delay(600.milliseconds)
         val index = announcements.indexOfFirst { it.id == id }
         if (index == -1) return Result.failure(Exception("Announcement not found"))
         val updated = announcements[index].copy(
@@ -514,13 +515,13 @@ class MockAdminRepository : IAdminRepository {
     }
 
     override suspend fun deleteAnnouncement(id: String): Result<Unit> {
-        delay(400)
+        delay(400.milliseconds)
         return if (announcements.removeIf { it.id == id }) Result.success(Unit)
         else Result.failure(Exception("Announcement not found"))
     }
 
     override suspend fun toggleAnnouncementActive(id: String): Result<Announcement> {
-        delay(400)
+        delay(400.milliseconds)
         val index = announcements.indexOfFirst { it.id == id }
         if (index == -1) return Result.failure(Exception("Announcement not found"))
         val updated = announcements[index].copy(isActive = !announcements[index].isActive)
@@ -531,12 +532,12 @@ class MockAdminRepository : IAdminRepository {
     // ── Admin management ─────────────────────────────────────────────────────
 
     override suspend fun getAdmins(): Result<List<Admin>> {
-        delay(400)
+        delay(400.milliseconds)
         return Result.success(adminAccounts.values.toList())
     }
 
     override suspend fun updateAdmin(admin: Admin): Result<Admin> {
-        delay(500)
+        delay(500.milliseconds)
         val entry = adminAccounts.entries.find { it.value.id == admin.id }
             ?: return Result.failure(Exception("Admin not found"))
         val updated = admin.copy(
@@ -553,7 +554,7 @@ class MockAdminRepository : IAdminRepository {
         phone: String,
         categories: List<Category>
     ): Result<Admin> {
-        delay(600)
+        delay(600.milliseconds)
         val key = email.lowercase()
         if (adminAccounts.containsKey(key)) return Result.failure(Exception("Email already in use"))
         val newId = "admin${adminAccounts.size + 1}"

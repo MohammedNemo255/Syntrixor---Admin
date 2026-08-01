@@ -47,6 +47,7 @@
     <string name="filter_completed">مكتمل</string>
     <string name="filter_cancelled">ملغي</string>
     <string name="no_requests">لا توجد طلبات</string>
+    <string name="select_a_request">اختر طلبًا لعرض تفاصيله</string>
     <string name="retry">إعادة المحاولة</string>
     <string name="search_requests">بحث في الطلبات…</string>
 
@@ -166,6 +167,7 @@
     <!-- Admin Management -->
     <string name="admins_title">إدارة المشرفين</string>
     <string name="no_admins">لا يوجد مشرفون</string>
+    <string name="select_an_admin">اختر مشرفًا لعرض تفاصيله</string>
     <string name="new_admin">مشرف جديد</string>
     <string name="admin_detail_title">تفاصيل المشرف</string>
     <string name="manage_admins">إدارة المشرفين</string>

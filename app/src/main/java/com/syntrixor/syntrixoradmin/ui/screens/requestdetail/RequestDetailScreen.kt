@@ -57,6 +57,7 @@ import com.syntrixor.syntrixoradmin.ui.theme.Violet600
 fun RequestDetailScreen(
     requestId: String,
     onBack: () -> Unit,
+    modifier: Modifier = Modifier,
     vm: RequestDetailViewModel = viewModel(factory = object : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             @Suppress("UNCHECKED_CAST")
@@ -81,6 +82,7 @@ fun RequestDetailScreen(
     }
 
     Scaffold(
+        modifier = modifier,
         topBar = { SyntrixorTopBar(title = stringResource(R.string.request_detail_title), onBack = onBack) },
         containerColor = MaterialTheme.colorScheme.background,
         snackbarHost = { SnackbarHost(snackbarHostState) { data ->

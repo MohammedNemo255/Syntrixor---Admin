@@ -63,6 +63,7 @@ fun AdminDetailScreen(
     adminId: String?,
     onSaveSuccess: () -> Unit,
     onBack: () -> Unit,
+    modifier: Modifier = Modifier,
     vm: AdminDetailViewModel = viewModel(factory = AdminDetailViewModel.factory(adminId))
 ) {
     val state by vm.state.collectAsState()
@@ -87,6 +88,7 @@ fun AdminDetailScreen(
     }
 
     Scaffold(
+        modifier = modifier,
         topBar = {
             SyntrixorTopBar(
                 title = stringResource(if (state.isCreateMode) R.string.new_admin else R.string.admin_detail_title),

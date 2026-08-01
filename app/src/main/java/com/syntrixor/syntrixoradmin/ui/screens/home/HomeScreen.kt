@@ -1,7 +1,10 @@
 package com.syntrixor.syntrixoradmin.ui.screens.home
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -15,6 +18,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,16 +30,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.syntrixor.syntrixoradmin.R
+import com.syntrixor.syntrixoradmin.ui.components.EmptyDetailPane
 import com.syntrixor.syntrixoradmin.ui.components.SyntrixorBottomNavBar
+import com.syntrixor.syntrixoradmin.ui.components.SyntrixorNavRail
 import com.syntrixor.syntrixoradmin.ui.screens.announcements.AnnouncementsEvent
 import com.syntrixor.syntrixoradmin.ui.screens.announcements.AnnouncementsScreen
 import com.syntrixor.syntrixoradmin.ui.screens.announcements.AnnouncementsViewModel
 import com.syntrixor.syntrixoradmin.ui.screens.dashboard.DashboardScreen
 import com.syntrixor.syntrixoradmin.ui.screens.profile.ProfileScreen
+import com.syntrixor.syntrixoradmin.ui.screens.requestdetail.RequestDetailScreen
 import com.syntrixor.syntrixoradmin.ui.screens.requests.RequestsScreen
 import com.syntrixor.syntrixoradmin.ui.screens.residents.ResidentsScreen
 import com.syntrixor.syntrixoradmin.ui.screens.technicians.TechniciansScreen
 import com.syntrixor.syntrixoradmin.ui.theme.Violet600
+import com.syntrixor.syntrixoradmin.utils.LocalIsTablet
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,6 +55,7 @@ fun HomeScreen(
 ) {
     var selectedTab by rememberSaveable { mutableStateOf("dashboard") }
     var showProfile by rememberSaveable { mutableStateOf(false) }
+    val isTablet = LocalIsTablet.current
 
     val announcementsVm: AnnouncementsViewModel = viewModel()
 
@@ -100,10 +109,13 @@ fun HomeScreen(
             )
         },
         bottomBar = {
-            SyntrixorBottomNavBar(
-                selectedRoute = selectedTab,
-                onTabSelected = { selectedTab = it }
-            )
+            // On tablet the same items live in a permanent side rail instead.
+            if (!isTablet) {
+                SyntrixorBottomNavBar(
+                    selectedRoute = selectedTab,
+                    onTabSelected = { selectedTab = it }
+                )
+            }
         },
         floatingActionButton = {
             if (selectedTab == "announcements") {
@@ -119,29 +131,97 @@ fun HomeScreen(
             }
         }
     ) { innerPadding ->
-        val contentModifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding)
-
-        when (selectedTab) {
-            "dashboard"     -> DashboardScreen(
-                modifier                 = contentModifier,
-                onRequestClick           = onNavigateToRequestDetail,
-                onViewAllRequests        = { selectedTab = "requests" },
-                onNavigateToTechnicians  = { selectedTab = "technicians" },
-                onNavigateToResidents    = { selectedTab = "residents" }
-            )
-            "requests"      -> RequestsScreen(
-                modifier       = contentModifier,
-                onRequestClick = onNavigateToRequestDetail
-            )
-            "technicians"   -> TechniciansScreen(modifier = contentModifier)
-            "residents"     -> ResidentsScreen(modifier = contentModifier)
-            "announcements" -> AnnouncementsScreen(
-                modifier = contentModifier,
-                vm = announcementsVm,
-                onNavigateToCreate = onNavigateToCreateAnnouncement
+        if (isTablet) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            ) {
+                SyntrixorNavRail(
+                    selectedRoute = selectedTab,
+                    onTabSelected = { selectedTab = it }
+                )
+                HomeContent(
+                    selectedTab = selectedTab,
+                    isTablet = true,
+                    onSelectTab = { selectedTab = it },
+                    onNavigateToRequestDetail = onNavigateToRequestDetail,
+                    onNavigateToCreateAnnouncement = onNavigateToCreateAnnouncement,
+                    announcementsVm = announcementsVm,
+                    modifier = Modifier.weight(1f).fillMaxHeight()
+                )
+            }
+        } else {
+            HomeContent(
+                selectedTab = selectedTab,
+                isTablet = false,
+                onSelectTab = { selectedTab = it },
+                onNavigateToRequestDetail = onNavigateToRequestDetail,
+                onNavigateToCreateAnnouncement = onNavigateToCreateAnnouncement,
+                announcementsVm = announcementsVm,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
             )
         }
+    }
+}
+
+@Composable
+private fun HomeContent(
+    selectedTab: String,
+    isTablet: Boolean,
+    onSelectTab: (String) -> Unit,
+    onNavigateToRequestDetail: (String) -> Unit,
+    onNavigateToCreateAnnouncement: () -> Unit,
+    announcementsVm: AnnouncementsViewModel,
+    modifier: Modifier = Modifier
+) {
+    when (selectedTab) {
+        "dashboard" -> DashboardScreen(
+            modifier                 = modifier,
+            onRequestClick           = onNavigateToRequestDetail,
+            onViewAllRequests        = { onSelectTab("requests") },
+            onNavigateToTechnicians  = { onSelectTab("technicians") },
+            onNavigateToResidents    = { onSelectTab("residents") }
+        )
+
+        "requests" -> {
+            if (isTablet) {
+                var selectedRequestId by rememberSaveable { mutableStateOf<String?>(null) }
+                Row(modifier = modifier) {
+                    RequestsScreen(
+                        modifier = Modifier.weight(0.4f).fillMaxHeight(),
+                        onRequestClick = { selectedRequestId = it }
+                    )
+                    VerticalDivider()
+                    if (selectedRequestId != null) {
+                        RequestDetailScreen(
+                            requestId = selectedRequestId!!,
+                            onBack = { selectedRequestId = null },
+                            modifier = Modifier.weight(0.6f).fillMaxHeight()
+                        )
+                    } else {
+                        EmptyDetailPane(
+                            message = stringResource(R.string.select_a_request),
+                            modifier = Modifier.weight(0.6f).fillMaxHeight()
+                        )
+                    }
+                }
+            } else {
+                RequestsScreen(
+                    modifier = modifier,
+                    onRequestClick = onNavigateToRequestDetail
+                )
+            }
+        }
+
+        "technicians"   -> TechniciansScreen(modifier = modifier)
+        "residents"     -> ResidentsScreen(modifier = modifier)
+        "announcements" -> AnnouncementsScreen(
+            modifier = modifier,
+            vm = announcementsVm,
+            onNavigateToCreate = onNavigateToCreateAnnouncement
+        )
     }
 }

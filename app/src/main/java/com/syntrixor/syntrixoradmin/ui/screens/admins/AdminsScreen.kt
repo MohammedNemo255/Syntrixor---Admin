@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,10 +29,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,12 +48,14 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.syntrixor.syntrixoradmin.R
 import com.syntrixor.syntrixoradmin.data.model.Admin
+import com.syntrixor.syntrixoradmin.ui.components.EmptyDetailPane
 import com.syntrixor.syntrixoradmin.ui.components.SearchField
 import com.syntrixor.syntrixoradmin.ui.components.SyntrixorTopBar
 import com.syntrixor.syntrixoradmin.ui.theme.Dimens
 import com.syntrixor.syntrixoradmin.ui.theme.Info
 import com.syntrixor.syntrixoradmin.ui.theme.Success
 import com.syntrixor.syntrixoradmin.ui.theme.Violet600
+import com.syntrixor.syntrixoradmin.utils.LocalIsTablet
 
 @Composable
 fun AdminsScreen(
@@ -58,6 +65,9 @@ fun AdminsScreen(
     vm: AdminsViewModel = viewModel()
 ) {
     val state by vm.state.collectAsState()
+    val isTablet = LocalIsTablet.current
+    // Two-pane selection state (tablet only) — null = nothing selected, "new" = create mode.
+    var selectedAdminId by rememberSaveable { mutableStateOf<String?>(null) }
     val filtered = remember(state.admins, state.searchQuery) {
         if (state.searchQuery.isBlank()) state.admins
         else state.admins.filter {
@@ -70,51 +80,102 @@ fun AdminsScreen(
         topBar = { SyntrixorTopBar(stringResource(R.string.admins_title), onBack = onBack) },
         containerColor = MaterialTheme.colorScheme.background,
         floatingActionButton = {
-            FloatingActionButton(onClick = onCreateAdmin, containerColor = Violet600) {
+            FloatingActionButton(
+                onClick = { if (isTablet) selectedAdminId = "new" else onCreateAdmin() },
+                containerColor = Violet600
+            ) {
                 Icon(Icons.Filled.Add, contentDescription = null, tint = Color.White)
             }
         }
     ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
-            SearchField(
-                query = state.searchQuery,
-                onQueryChange = { vm.onEvent(AdminsEvent.SearchChanged(it)) },
-                hint = stringResource(R.string.search_admins),
-                modifier = Modifier.padding(horizontal = Dimens.ScreenPaddingHorizontal, vertical = Dimens.SpaceSm)
+        if (isTablet) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            ) {
+                AdminsListContent(
+                    state = state,
+                    filtered = filtered,
+                    vm = vm,
+                    onAdminClick = { selectedAdminId = it },
+                    modifier = Modifier.weight(0.4f).fillMaxHeight()
+                )
+                VerticalDivider()
+                if (selectedAdminId != null) {
+                    AdminDetailScreen(
+                        adminId = selectedAdminId,
+                        onSaveSuccess = {
+                            selectedAdminId = null
+                            vm.onEvent(AdminsEvent.Load)
+                        },
+                        onBack = { selectedAdminId = null },
+                        modifier = Modifier.weight(0.6f).fillMaxHeight()
+                    )
+                } else {
+                    EmptyDetailPane(
+                        message = stringResource(R.string.select_an_admin),
+                        modifier = Modifier.weight(0.6f).fillMaxHeight()
+                    )
+                }
+            }
+        } else {
+            AdminsListContent(
+                state = state,
+                filtered = filtered,
+                vm = vm,
+                onAdminClick = onAdminClick,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
             )
+        }
+    }
+}
 
-            when {
-                state.isLoading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = Violet600)
+@Composable
+private fun AdminsListContent(
+    state: AdminsState,
+    filtered: List<Admin>,
+    vm: AdminsViewModel,
+    onAdminClick: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        SearchField(
+            query = state.searchQuery,
+            onQueryChange = { vm.onEvent(AdminsEvent.SearchChanged(it)) },
+            hint = stringResource(R.string.search_admins),
+            modifier = Modifier.padding(horizontal = Dimens.ScreenPaddingHorizontal, vertical = Dimens.SpaceSm)
+        )
+
+        when {
+            state.isLoading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = Violet600)
+            }
+
+            state.error != null -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(state.error ?: "", color = MaterialTheme.colorScheme.error)
+                    Spacer(Modifier.height(12.dp))
+                    Button(
+                        onClick = { vm.onEvent(AdminsEvent.Load) },
+                        colors = ButtonDefaults.buttonColors(containerColor = Violet600)
+                    ) { Text(stringResource(R.string.retry), color = Color.White) }
                 }
+            }
 
-                state.error != null -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(state.error ?: "", color = MaterialTheme.colorScheme.error)
-                        Spacer(Modifier.height(12.dp))
-                        Button(
-                            onClick = { vm.onEvent(AdminsEvent.Load) },
-                            colors = ButtonDefaults.buttonColors(containerColor = Violet600)
-                        ) { Text(stringResource(R.string.retry), color = Color.White) }
-                    }
-                }
+            filtered.isEmpty() -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(stringResource(R.string.no_admins), color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
 
-                filtered.isEmpty() -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(stringResource(R.string.no_admins), color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-
-                else -> LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(Dimens.ScreenPaddingHorizontal),
-                    verticalArrangement = Arrangement.spacedBy(Dimens.SpaceSm)
-                ) {
-                    items(filtered, key = { it.id }) { admin ->
-                        AdminCard(admin = admin, onClick = { onAdminClick(admin.id) })
-                    }
+            else -> LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(Dimens.ScreenPaddingHorizontal),
+                verticalArrangement = Arrangement.spacedBy(Dimens.SpaceSm)
+            ) {
+                items(filtered, key = { it.id }) { admin ->
+                    AdminCard(admin = admin, onClick = { onAdminClick(admin.id) })
                 }
             }
         }
